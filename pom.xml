@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>se.gu.spraakbanken.fcs.endpoint.korp</groupId>
   <artifactId>fcs-korp-endpoint</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1-kp-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>A Korp CLARIN FCS 2.0 endpoint</name>
+  <name>A Korp CLARIN FCS 2.0 endpoint, Kielipankki version</name>
   <description>
-    A Korp CLARIN FCS endpoint implementation as an example of a CLARIN FCS 2.0 endpoint.
+    A Korp CLARIN FCS endpoint implementation as an example of a CLARIN FCS 2.0 endpoint, modified for Kielipankki (The Language Bank of Finland).
   </description>
 
   <properties>
