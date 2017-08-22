@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <endpoint-config xmlns="http://www.clarin.eu/sru-server/1.0/">
     <databaseInfo>
+        <title xml:lang="fi">Kielipankin korpukset</title>
         <title xml:lang="se">Språkbankens korpusar</title>
-        <title xml:lang="en" primary="true">The Språkbanken corpora</title>
+        <title xml:lang="en" primary="true">Kielipankki’s corpora</title>
+        <description xml:lang="fi">Hae Kielipankin korpuksista.</description>
         <description xml:lang="se">Sök i Språkbankens korpusar.</description>
-        <description xml:lang="en" primary="true">Search in the Språkbanken corpora.</description>
-        <author xml:lang="en">Språkbanken (The Swedish Language Bank)</author>
-        <author xml:lang="se" primary="true">Språkbanken</author>
+        <description xml:lang="en" primary="true">Search in the corpora of Kielipankki (The Language Bank of Finland).</description>
+        <author xml:lang="fi">Kielipankki</author>
+        <author xml:lang="se">Kielipankki (Språkbanken i Finland)</author>
+        <author xml:lang="en" primary="true">Kielipankki (The Language Bank of Finland)</author>
     </databaseInfo>
     
     <indexInfo>
         <set name="fcs" identifier="http://clarin.eu/fcs/resource">
-            <title xml:lang="se">Clarins innehållssökning</title>
+            <title xml:lang="fi">CLARINin sisältöhaku</title>
+            <title xml:lang="se">CLARINs innehållssökning</title>
             <title xml:lang="en" primary="true">CLARIN Content Search</title>
         </set>
         <index search="true" scan="false" sort="false">
+            <title xml:lang="fi">Sanoja</title>
+            <title xml:lang="se">Ord</title>
             <title xml:lang="en" primary="true">Words</title>
             <map primary="true">
                 <name set="fcs">words</name>
