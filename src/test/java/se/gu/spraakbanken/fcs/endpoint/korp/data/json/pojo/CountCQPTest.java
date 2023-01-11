@@ -99,7 +99,7 @@ public class CountCQPTest {
 
 	CountCQP cl4 = null;
 	String roundTripString = "";
-	String wsString ="https://spraakbanken.gu.se/ws/korp?";
+	String wsString ="https://ws.spraakbanken.gu.se/ws/korp/v6/?";
 	String queryString = "indent=4&command=count&cqp=%5Bword=%22givande%22%5D&corpus=ROMI&groupby=word&ignore_case=word";
 //{"corpora":{},"time":3.287792205810547E-4,"ERROR":{"type":"KeyError","value":"'Key is required: groupby'"}}
 

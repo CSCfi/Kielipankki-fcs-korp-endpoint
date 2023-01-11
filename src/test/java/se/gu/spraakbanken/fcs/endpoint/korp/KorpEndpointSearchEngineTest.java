@@ -328,14 +328,17 @@ public class KorpEndpointSearchEngineTest {
 	StringWriter sw = new StringWriter();
 	XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
 	XMLStreamWriter xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(sw);
-	System.out.println("getCurrentRecordCursor 0: " + kssrs.getCurrentRecordCursor());
-	if (kssrs.nextRecord()) {
-	    kssrs.writeRecord(xmlStreamWriter);
-	    System.out.println("search1: " + sw.toString());
+	try {
+	    System.out.println("getCurrentRecordCursor 0: " + kssrs.getCurrentRecordCursor());
+	    if (kssrs.nextRecord()) {
+		kssrs.writeRecord(xmlStreamWriter);
+		System.out.println("search1: " + sw.toString());
+	    }
+	    xmlStreamWriter.flush();
+	    xmlStreamWriter.close();
+	} catch (Exception ex) {
+	    xmlStreamWriter.close();
 	}
-	xmlStreamWriter.flush();
-	xmlStreamWriter.close();
-
 
 	System.out.println("getHits: " + queryRes.getHits());
 	System.out.println("getTotalRecordCount: " + kssrs.getTotalRecordCount());

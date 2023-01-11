@@ -153,7 +153,7 @@ public class CorporaInfo {
         ObjectMapper mapper = new ObjectMapper();
 
 	CorporaInfo ci = null;
-	final String wsString ="https://spraakbanken.gu.se/ws/korp?";
+	final String wsString ="https://ws.spraakbanken.gu.se/ws/korp/v6/?";
 	final String queryString = "command=info&corpus=";
 	//"ROMI,PAROLE";
 	final String corporaValues = getCorpusParameterValues(corpora);

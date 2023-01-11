@@ -138,7 +138,7 @@ public class QueryTest {
 
 	Query q4 = null;
 	String roundTripString = "";
-	String wsString ="https://spraakbanken.gu.se/ws/korp?";
+	String wsString ="https://ws.spraakbanken.gu.se/ws/korp/v6/?";
 	String queryString = "indent=4&command=query&corpus=SUC2&start=0&end=9&defaultcontext=1+sentence&cqp=%22och%22+%5B%5D+%5Bpos=%22NN%22%5D&show=msd,lemma";
 //lang=sv&stats_reduce=word&cqp=[]&word_pic&search_tab=2&corpus=suc2&search=cqp|[word%3D"och"] [] [pos%3D"NN"]
 //command=query
@@ -185,7 +185,7 @@ public class QueryTest {
 
 	Query q4 = null;
 	String roundTripString = "";
-	String wsString ="https://spraakbanken.gu.se/ws/korp?";
+	String wsString ="https://ws.spraakbanken.gu.se/ws/korp/v6/?";
 	String queryString = "indent=4&command=query&corpus=SUC2&start=0&end=9&defaultcontext=1+sentence&cq=%22och%22+%5B%5D+%5Bpos=%22NN%22%5D&show=msd,lemma";
         try {
 	    URL korp = new URL(wsString + queryString);
