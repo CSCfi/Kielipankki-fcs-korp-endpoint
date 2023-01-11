@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -19,6 +20,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.net.*;
+import java.io.*;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -153,14 +157,21 @@ public class CorporaInfo {
         ObjectMapper mapper = new ObjectMapper();
 
 	CorporaInfo ci = null;
-	final String wsString ="https://ws.spraakbanken.gu.se/ws/korp/v6/?";
-	final String queryString = "command=info&corpus=";
-	//"ROMI,PAROLE";
+	final String wsString ="https://korp.csc.fi/korp/api8/";
+	final String queryString = "corpus_info?corpus=";
 	final String corporaValues = getCorpusParameterValues(corpora);
         try {
 	    URL korp = new URL(wsString + queryString + corporaValues);
-
+            System.out.println(korp.toString());
+            BufferedReader in = new BufferedReader(new InputStreamReader(korp.openStream()));
+            
+            String inputLine;
+            while ((inputLine = in.readLine()) != null)
+                System.out.println(inputLine);
+            in.close();
+            
             ci = mapper.reader(CorporaInfo.class).readValue(korp.openStream());
+            System.out.println(ci.getTotalSentences());
         } catch (JsonParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
