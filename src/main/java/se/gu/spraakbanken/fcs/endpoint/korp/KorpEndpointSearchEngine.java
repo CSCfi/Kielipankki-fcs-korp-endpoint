@@ -402,26 +402,25 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         return new KorpSRUSearchResultSet(config, request, diagnostics, queryRes, query, openCorporaInfo);
     }
 
-    protected Query makeQuery(final String cqpQuery, CorporaInfo openCorporaInfo, final int startRecord,
-            final int maximumRecords) {
-        ObjectMapper mapper = new ObjectMapper();
-        String wsStringv6 = "https://ws.spraakbanken.gu.se/ws/korp/v6/?";
-        String queryStringv6 = "command=query&defaultcontext=1+sentence&show=msd,lemma&cqp=";
-        String wsString = "https://ws.spraakbanken.gu.se/ws/korp/v8/query?";
-        String queryString = "default_context=1+sentence&show=msd,lemma&cqp=";
-        String startParam = "&start=" + (startRecord == 1 ? 0 : startRecord - 1);
-        String endParam = "&end=" + (maximumRecords == 0 ? 250 : startRecord - 1 + maximumRecords - 1);
-        String corpusParam = "&corpus=";
-        // "SUC2";
-        String corpusParamValues = CorporaInfo.getCorpusParameterValues(openCorporaInfo.getCorpora().keySet());
+    protected Query makeQuery(final String cqpQuery, CorporaInfo openCorporaInfo, final int startRecord, final int maximumRecords) {
+	ObjectMapper mapper = new ObjectMapper();
+	String wsString ="https://korp.csc.fi/korp/api8/";
+	String queryString = "query?defaultcontext=1+sentence&show=msd,lemma&cqp=";
+	String startParam = "&start=" + (startRecord == 1 ? 0 : startRecord - 1);
+	String endParam = "&end=" + (maximumRecords == 0 ? 250 : startRecord - 1 + maximumRecords - 1);
+	String corpusParam = "&corpus=";
+	    //"SUC2";
+	String corpusParamValues = CorporaInfo.getCorpusParameterValues(openCorporaInfo.getCorpora().keySet());
+        System.out.println("before try");
         try {
-            URL korp = new URL(wsString + queryString + URLEncoder.encode(cqpQuery, "UTF-8") + startParam + endParam
-                    + corpusParam + corpusParamValues);
+	    URL korp = new URL(wsString + queryString + URLEncoder.encode(cqpQuery, "UTF-8") + startParam + endParam + corpusParam + corpusParamValues);
+            System.out.println("URL constructed");
+            System.out.println(korp.toString());
             // mapper.reader(Query.class).readValue(korp.openStream());
-            // truncates the query string
-            // using URLConnection.getInputStream() instead. /ljo
-            URLConnection connection = korp.openConnection();
-            return mapper.reader(Query.class).readValue(connection.getInputStream());
+	    // truncates the query string 
+	    // using URLConnection.getInputStream() instead. /ljo
+	    URLConnection connection = korp.openConnection();
+	    return mapper.reader(Query.class).readValue(connection.getInputStream());
         } catch (JsonParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -10,7 +10,7 @@
   <packaging>war</packaging>
   <name>A Korp CLARIN FCS 2.0 endpoint, Kielipankki version</name>
   <description>
-    A Korp CLARIN FCS endpoint implementation as an example of a CLARIN FCS 2.0 endpoint, modified for Kielipankki (The Language Bank of Finland).
+    A Korp CLARIN FCS endpoint implementation as an example of a CLARIN FCS 2.0 endpoint.
   </description>
 
   <properties>
