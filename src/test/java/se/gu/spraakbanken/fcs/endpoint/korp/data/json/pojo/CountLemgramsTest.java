@@ -85,7 +85,7 @@ public class CountLemgramsTest {
 
 	CountLemgrams cl4 = null;
 	String roundTripString = "";
-	String wsString ="https://spraakbanken.gu.se/ws/korp?";
+	String wsString ="https://ws.spraakbanken.gu.se/ws/korp/v6/?";
 	String queryString = "indent=4&command=lemgram_count&lemgram=ge..vb.1&lemgram=hitta..vb.1&corpus=ROMI&corpus=SUC2";
 
         try {

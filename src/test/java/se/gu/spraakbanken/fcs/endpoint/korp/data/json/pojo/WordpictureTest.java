@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.wordpicture.*;
 
 public class WordpictureTest {
-    private String jsonString = "{\"relations\":[{\"dep\":\"pappa..nn.1\",\"depextra\":\"\",\"deppos\":\"NN\",\"freq\":20,\"head\":\"ge..vb.1\",\"headpos\":\"VB\",\"mi\":22.20880511167489,\"rel\":\"SS\",\"source\":[\"ROMI:44373\"]}],\"time\":0.002602100372314453}";
+    private String jsonString = "{\"relations\":[{\"dep\":\"pappa..nn.1\",\"depextra\":\"\",\"deppos\":\"NN\",\"freq\":20,\"head\":\"ge..vb.1\",\"headpos\":\"VB\",\"mi\":22.20880511167489,\"rel\":\"SS\",\"source\":[\"ROMI:230203\"]}],\"time\":0.002602100372314453}";
 
     @Test
     public void wordpictureSerialize() {
@@ -33,7 +33,7 @@ public class WordpictureTest {
 
         Wordpicture wp = new Wordpicture();
 	Relation rel = new Relation();
-	//{\"dep\":\"pappa..nn.1\",\"depextra\":\"\",\"deppos\":\"NN\",\"freq\":20,\"head\":\"ge..vb.1\",\"headpos\":\"VB\",\"mi\":22.20880511167489,\"rel\":\"SS\",\"source\":[\"ROMI:44373\"]}]
+	//{\"dep\":\"pappa..nn.1\",\"depextra\":\"\",\"deppos\":\"NN\",\"freq\":20,\"head\":\"ge..vb.1\",\"headpos\":\"VB\",\"mi\":22.20880511167489,\"rel\":\"SS\",\"source\":[\"ROMI:230203\"]}]
 	rel.setDep("pappa..nn.1");
 	rel.setDepextra("");
 	rel.setDeppos("NN");
@@ -43,7 +43,7 @@ public class WordpictureTest {
 	rel.setMi(new Double("22.20880511167489"));
 	rel.setRel("SS");
 	List ss = new ArrayList<String>();
-	ss.add("ROMI:44373");
+	ss.add("ROMI:230203");
 	rel.setSource(ss);
 	List relList = new ArrayList<Relation>();
 	relList.add(rel);
@@ -99,7 +99,7 @@ public class WordpictureTest {
 
 	Wordpicture wp4 = null;
 	String roundTripString = "";
-	String wsString ="https://spraakbanken.gu.se/ws/korp?";
+	String wsString ="https://ws.spraakbanken.gu.se/ws/korp/v6/?";
 	String queryString = "command=relations&word=ge..vb.1&type=lemgram&corpus=ROMI";
 
         try {
@@ -123,7 +123,7 @@ public class WordpictureTest {
 
         System.out.println(roundTripString);
 	//assertEquals(jsonString, roundTripString);
-	assertEquals("ROMI:44373", wp4.getRelations().get(0).getSource().get(0));
+	assertEquals("ROMI:230203", wp4.getRelations().get(0).getSource().get(0));
 	assertNotNull(wp4.getTime());
 
     }

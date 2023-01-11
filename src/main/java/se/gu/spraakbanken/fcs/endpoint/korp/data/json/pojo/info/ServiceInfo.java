@@ -139,7 +139,7 @@ public class ServiceInfo {
         ObjectMapper mapper = new ObjectMapper();
 
 	ServiceInfo si = null;
-	final String wsString = "https://spraakbanken.gu.se/ws/korp?";
+	final String wsString = "https://ws.spraakbanken.gu.se/ws/korp/v6/?";
 	final String queryString = "command=info";
 
         try {
