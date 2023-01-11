@@ -18,7 +18,7 @@
     <SupportedLayer id="pos" result-id="http://spraakbanken.gu.se/ns/fcs/layer/pos">pos</SupportedLayer>
   </SupportedLayers>
   <Resources>
-    <Resource pid="urn:test-foo">
+    <Resource pid="urn:all">
       <Title xml:lang="fi">Kielipankin korpukset</Title>
       <Title xml:lang="sv">Kielipankkis korpusar</Title>
       <Title xml:lang="en">Kielipankki corpora</Title>
@@ -52,7 +52,7 @@
 	  <AvailableDataViews ref="hits adv"/>
 	  <AvailableLayers ref="word lemma pos"/>
 	  <Resources>
-	    <Resource pid="urn:...">
+	    <Resource pid="urn:klk">
 	      <Title xml:lang="fi">Kansalliskirjaston lehtikokoelman ruotsinkielinen osuus</Title>
 	      <Title xml:lang="sv">Nationalbibliotekets svenskspråkiga tidningar och tidskrifter</Title>
 	      <Title xml:lang="en">Swedish-language newspapers and magazines of The Finnish National Library</Title>
@@ -67,34 +67,33 @@
 	    </Resource>
 	  </Resources>
 	</Resource>
-<!--
-	<Resource pid="hdl:10794/sbmoderna">
-	  <Title xml:lang="sv">Språkbankens moderna korpusar</Title>
-	  <Title xml:lang="en">The Språkbanken modern corpora</Title>
-	  <Description xml:lang="sv">De moderna korpusarna hos Språkbanken.</Description>
-	  <Description xml:lang="en">The modern corpora at Språkbanken.</Description>
-	  <LandingPageURI>https://spraakbanken.gu.se/resurser/moderna</LandingPageURI>
-	  <Languages>
-            <Language>swe</Language>
-	  </Languages>
-	  <AvailableDataViews ref="hits adv"/>
-	  <AvailableLayers ref="word lemma pos"/>
-	  <Resources>
-	    <Resource pid="hdl:10794/suc">
-	      <Title xml:lang="sv">SUC-korpusen</Title>
-	      <Title xml:lang="en">The SUC corpus</Title>
-	      <Description xml:lang="sv">Stockholm-Umeå-korpusen hos Språkbanken.</Description>
-	      <Description xml:lang="en">The Stockholm-Umeå corpus at Språkbanken.</Description>
-	      <LandingPageURI>https://spraakbanken.gu.se/resurser/suc</LandingPageURI>
-	      <Languages>
-		<Language>swe</Language>
-	      </Languages>
-	      <AvailableDataViews ref="hits adv"/>
-	      <AvailableLayers ref="word lemma pos"/>
-	    </Resource>
-	  </Resources>
-	</Resource>
--->
+
+	<!-- <Resource pid="hdl:10794/sbmoderna"> -->
+	<!--   <Title xml:lang="sv">Språkbankens moderna korpusar</Title> -->
+	<!--   <Title xml:lang="en">The Språkbanken modern corpora</Title> -->
+	<!--   <Description xml:lang="sv">De moderna korpusarna hos Språkbanken.</Description> -->
+	<!--   <Description xml:lang="en">The modern corpora at Språkbanken.</Description> -->
+	<!--   <LandingPageURI>https://spraakbanken.gu.se/resurser/moderna</LandingPageURI> -->
+	<!--   <Languages> -->
+        <!--     <Language>swe</Language> -->
+	<!--   </Languages> -->
+	<!--   <AvailableDataViews ref="hits adv"/> -->
+	<!--   <AvailableLayers ref="word lemma pos"/> -->
+	<!--   <Resources> -->
+	<!--     <Resource pid="hdl:10794/suc"> -->
+	<!--       <Title xml:lang="sv">SUC-korpusen</Title> -->
+	<!--       <Title xml:lang="en">The SUC corpus</Title> -->
+	<!--       <Description xml:lang="sv">Stockholm-Umeå-korpusen hos Språkbanken.</Description> -->
+	<!--       <Description xml:lang="en">The Stockholm-Umeå corpus at Språkbanken.</Description> -->
+	<!--       <LandingPageURI>https://spraakbanken.gu.se/resurser/suc</LandingPageURI> -->
+	<!--       <Languages> -->
+	<!-- 	<Language>swe</Language> -->
+	<!--       </Languages> -->
+	<!--       <AvailableDataViews ref="hits adv"/> -->
+	<!--       <AvailableLayers ref="word lemma pos"/> -->
+	<!--     </Resource> -->
+	<!--   </Resources> -->
+	<!-- </Resource> -->
       </Resources>
     </Resource>
   </Resources>

@@ -435,16 +435,19 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
 
     protected Query makeQuery(final String cqpQuery, CorporaInfo openCorporaInfo, final int startRecord, final int maximumRecords) {
 	ObjectMapper mapper = new ObjectMapper();
-	String wsString ="https://ws.spraakbanken.gu.se/ws/korp/v6/?";
-	String queryString = "command=query&defaultcontext=1+sentence&show=msd,lemma&cqp=";
+	String wsString ="https://korp.csc.fi/korp/api8/";
+	String queryString = "query?defaultcontext=1+sentence&show=msd,lemma&cqp=";
 	String startParam = "&start=" + (startRecord == 1 ? 0 : startRecord - 1);
 	String endParam = "&end=" + (maximumRecords == 0 ? 250 : startRecord - 1 + maximumRecords - 1);
 	String corpusParam = "&corpus=";
 	    //"SUC2";
 	String corpusParamValues = CorporaInfo.getCorpusParameterValues(openCorporaInfo.getCorpora().keySet());
+        System.out.println("before try");
         try {
 	    URL korp = new URL(wsString + queryString + URLEncoder.encode(cqpQuery, "UTF-8") + startParam + endParam + corpusParam + corpusParamValues);
-	    // mapper.reader(Query.class).readValue(korp.openStream());
+            System.out.println("URL constructed");
+            System.out.println(korp.toString());
+            // mapper.reader(Query.class).readValue(korp.openStream());
 	    // truncates the query string 
 	    // using URLConnection.getInputStream() instead. /ljo
 	    URLConnection connection = korp.openConnection();
