@@ -442,11 +442,8 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
 	String corpusParam = "&corpus=";
 	    //"SUC2";
 	String corpusParamValues = CorporaInfo.getCorpusParameterValues(openCorporaInfo.getCorpora().keySet());
-        System.out.println("before try");
         try {
 	    URL korp = new URL(wsString + queryString + URLEncoder.encode(cqpQuery, "UTF-8") + startParam + endParam + corpusParam + corpusParamValues);
-            System.out.println("URL constructed");
-            System.out.println(korp.toString());
             // mapper.reader(Query.class).readValue(korp.openStream());
 	    // truncates the query string 
 	    // using URLConnection.getInputStream() instead. /ljo
