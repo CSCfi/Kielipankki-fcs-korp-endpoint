@@ -21,9 +21,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.net.*;
-import java.io.*;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
 	"corpora",
@@ -162,16 +159,7 @@ public class CorporaInfo {
 	final String corporaValues = getCorpusParameterValues(corpora);
         try {
 	    URL korp = new URL(wsString + queryString + corporaValues);
-            System.out.println(korp.toString());
-            BufferedReader in = new BufferedReader(new InputStreamReader(korp.openStream()));
-            
-            String inputLine;
-            while ((inputLine = in.readLine()) != null)
-                System.out.println(inputLine);
-            in.close();
-            
             ci = mapper.reader(CorporaInfo.class).readValue(korp.openStream());
-            System.out.println(ci.getTotalSentences());
         } catch (JsonParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
