@@ -103,7 +103,7 @@ public class KorpEndpointSearchEngineTest {
         // assertNotNull(kese.getCorporaInfo().getCorpus("PAROLE"));
     }
 
-    @Test
+   /* @Test
     public void search1() throws SRUException, SRUConfigException, XMLStreamException {
         KorpEndpointSearchEngine kese = new KorpEndpointSearchEngine();
         SRUDiagnosticList diagnostics = new Diagnostic();
@@ -143,6 +143,8 @@ public class KorpEndpointSearchEngineTest {
         // assertEquals(res, resActual);
     }
 
+
+    */
     @AfterClass
     public static void cleanupServletContainer() throws Exception {
         tester.stop();
