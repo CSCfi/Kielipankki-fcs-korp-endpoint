@@ -117,7 +117,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
      * @param queryParserBuilder
      *            the {@link SRUQueryParserRegistry.Builder} object to be used
      *            for this search engine. Use to register additional query
-     *            parsers with the {@link SRUServer}.
+     *            parsers with the {link SRUServer}.
      * @param params
      *            additional parameters gathered from the Servlet configuration
      *            and Servlet context.

@@ -16,10 +16,10 @@
     <!-- project settings -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- plug-in settings -->
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
     <!-- versions of common dependencies -->
-    <slf4j.version>1.7.12</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
   </properties>
   <licenses>
     <license>
@@ -42,10 +42,16 @@
     </developer>
   </developers>
   <dependencies>
+    <!-- https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <version>3.0.0</version>
+    </dependency>
     <dependency>
       <groupId>eu.clarin.sru.fcs</groupId>
       <artifactId>fcs-simple-endpoint</artifactId>
-      <version>1.4.0</version>
+      <version>1.7.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -83,7 +89,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.1</version>
+        <version>3.13.0</version>
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
@@ -93,7 +99,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.8.1</version>
+        <version>3.10.0</version>
         <executions>
           <execution>
             <id>attach-javadoc</id>

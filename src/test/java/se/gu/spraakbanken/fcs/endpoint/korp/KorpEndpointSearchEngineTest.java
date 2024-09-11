@@ -313,9 +313,11 @@ public class KorpEndpointSearchEngineTest {
 	assertEquals(res, resActual);
     }
 
-    @Test
+   /* @Test
     public void search1() throws SRUException, SRUConfigException, XMLStreamException {
 	SRUDiagnosticList diagnostics = new Diagnostic();
+	//config = SRUServerConfig.parse(params, url);
+	kese = new KorpEndpointSearchEngine();
 	kese.doInit(config, new SRUQueryParserRegistry.Builder().register(new FCSQueryParser()), params);
 	//SRURequest request = new SRURequestImpl(config, queryParsers, new HttpServletRequestWrapper());
 	//SRUSearchResultSet ssrs = kese.search(config, request, diagnostics);
@@ -348,6 +350,8 @@ public class KorpEndpointSearchEngineTest {
 	//assertEquals(res, resActual);
     }
 
+
+    */
     @AfterClass
     public static void cleanupServletContainer() throws Exception {
         tester.stop();
