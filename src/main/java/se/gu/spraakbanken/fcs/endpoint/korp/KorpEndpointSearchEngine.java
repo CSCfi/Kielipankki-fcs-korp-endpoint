@@ -404,7 +404,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
 
     protected Query makeQuery(final String cqpQuery, CorporaInfo openCorporaInfo, final int startRecord, final int maximumRecords) {
 	ObjectMapper mapper = new ObjectMapper();
-	String wsString ="https://korp.csc.fi/korp/api8/";
+	String wsString ="https://www.kielipankki.fi/korp/api8/";
 	String queryString = "query?defaultcontext=1+sentence&show=msd,lemma&cqp=";
 	String startParam = "&start=" + (startRecord == 1 ? 0 : startRecord - 1);
 	String endParam = "&end=" + (maximumRecords == 0 ? 250 : startRecord - 1 + maximumRecords - 1);
