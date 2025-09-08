@@ -8,25 +8,37 @@ Use `mvn clean package` to do a full build with tests, war, sources and javadoc.
 
 There are though some configurations to change if you want to use it with your own Korp service.
 
-## Kielipankki quick start (outdated)
+## Kielipankki quick start
 
 Steps to get a local instance running on an apt-based distribution:
 
 ```bash
-# make sure to be in the branch with our hacks
-git checkout kp-dev
 # Dependencies
-sudo apt install tomcat9 maven openjdk-8-jdk
-# You can control the service with eg.
-# sudo systemctl start tomcat9.service
-# Build package, very old Java version seemed to be necessary for some reason
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ mvn -D maven.test.skip=true package
-# Build war file
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ mvn -D maven.test.skip=true war:war
-# Copy war file to where Tomcat runs things from
-sudo cp target/fcs-korp-endpoint-0.1-SNAPSHOT.war /var/lib/tomcat9/webapps/fcs-korp.war
+sudo apt install maven openjdk-21-jdk
 
+# download tomcat11
+wget https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.11/bin/apache-tomcat-11.0.11.tar.gz
+# and unzip it, removing the tar.gz file
+tar -xvzf apache-tomcat-11.0.11.tar.gz && rm apache-tomcat-11.0.11.tar.gz
 
-# Can test with eg.
+# download the official migration tool Tomcat 9 -> 11 (javax -> jakarta) 
+wget https://dlcdn.apache.org/tomcat/jakartaee-migration/v1.0.9/binaries/jakartaee-migration-1.0.9-bin.tar.gz
+# and unzip it, removing the tar.gz file
+tar -xvzf jakartaee-migration-1.0.9.tar.gz && rm jakartaee-migration-1.0.9.tar.gz
+
+# Open the project's directory
+cd Kielipankki-fcs-korp-endpoint
+
+# Build the WAR file with Maven
+mvn clean package -D maven.test.skip=true war:war
+
+# Migrate the war file from javax to jakarta (necessary for Tomcat11)
+sudo ../jakartaee-migration-1.0.9/bin/migrate.sh target/fcs-korp-endpoint-0.1-kp-SNAPSHOT.war target/fcs-korp-endpoint-0.1-kp-SNAPSHOT-MIGRATED.war
+
+# Copy WAR into Tomcat webapps
+cp ./target/fcs-korp-endpoint-0.1-kp-SNAPSHOT-MIGRATED.war \
+   ../apache-tomcat-11.0.11/webapps/fcs-korp.war
+
+# Test with eg.
 curl "localhost:8080/fcs-korp/sru?queryType=fcs&query=%5Bword+%3D+%27bastu%27%5D"
 ```
