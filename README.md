@@ -30,17 +30,17 @@ tar -xvzf jakartaee-migration-1.0.9-bin.tar.gz && rm jakartaee-migration-1.0.9-b
 cd Kielipankki-fcs-korp-endpoint
 
 # Build the WAR file with Maven
-mvn clean package -D maven.test.skip=true war:war
+sudo mvn clean package -D maven.test.skip=true war:war
 
 # Migrate the war file from javax to jakarta (necessary for Tomcat11)
 sudo ../jakartaee-migration-1.0.9/bin/migrate.sh target/fcs-korp-endpoint-0.1-kp-SNAPSHOT.war target/fcs-korp-endpoint-0.1-kp-SNAPSHOT-MIGRATED.war
 
 # Copy WAR into Tomcat webapps
-cp ./target/fcs-korp-endpoint-0.1-kp-SNAPSHOT-MIGRATED.war \
+sudo cp ./target/fcs-korp-endpoint-0.1-kp-SNAPSHOT-MIGRATED.war \
    ../apache-tomcat-11.0.9/webapps/fcs-korp.war
 
 #Start Tomcat
-../apache-tomcat-11.0.9/bin/startup.sh
+sudo ../apache-tomcat-11.0.9/bin/startup.sh
 
 # Test with eg.
 curl "localhost:8080/fcs-korp/sru?queryType=fcs&query=%5Bword+%3D+%27bastu%27%5D"
