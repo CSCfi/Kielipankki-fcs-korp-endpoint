@@ -85,6 +85,11 @@
       <version>2.5</version>
       <type>jar</type>
       <scope>provided</scope>
+        <!-- would be great if it worked
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>6.1.0</version>
+        <scope>provided</scope>-->
     </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-testing</groupId>
