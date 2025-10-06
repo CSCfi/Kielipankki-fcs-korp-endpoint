@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import se.gu.spraakbanken.fcs.endpoint.korp.Config;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -47,7 +48,14 @@ public class ServiceInfo {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     // The list of Kielipankki corpora
-    private static final List<String> MODERN_CORPORA = Collections.unmodifiableList(Arrays.asList("YLENEWS_FI_2011_S", "KLK_SV_1917"));
+    //private static final List<String> MODERN_CORPORA = Collections.unmodifiableList(Arrays.asList("KLK_SV_1917", "YLENEWS_FI_2011_S"));
+    private static final List<String> MODERN_CORPORA;
+    static {
+        List<String> corpora = new ArrayList<>();
+        Collections.addAll(corpora, Config.get("YLENEWS_FI_corpora").split("\\s*,\\s*"));
+        Collections.addAll(corpora, Config.get("KLK_SV_corpora").split("\\s*,\\s*"));
+        MODERN_CORPORA = Collections.unmodifiableList(corpora);
+    }
     private static final List<String> MODERN_PROTECTED_CORPORA = Collections.unmodifiableList(Arrays.asList());
 
 
