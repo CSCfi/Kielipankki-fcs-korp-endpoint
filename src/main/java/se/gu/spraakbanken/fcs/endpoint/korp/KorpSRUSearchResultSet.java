@@ -1,7 +1,9 @@
 /**
 *   @license http://www.gnu.org/licenses/gpl-3.0.txt
-*   GNU General Public License v3 
+*    GNU General Public License v3 
 */ 
+
+package se.gu.spraakbanken.fcs.endpoint.korp;
 
 import se.gu.spraakbanken.fcs.endpoint.korp.cqp.PosTranslator;
 import se.gu.spraakbanken.fcs.endpoint.korp.cqp.TranslatorChooser;
