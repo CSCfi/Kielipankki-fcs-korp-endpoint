@@ -47,7 +47,7 @@ public class ServiceInfo {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     // The list of Kielipankki corpora
-    private static final List<String> MODERN_CORPORA = Collections.unmodifiableList(Arrays.asList("KLK_SV_1910", "KLK_SV_1911"));
+    private static final List<String> MODERN_CORPORA = Collections.unmodifiableList(Arrays.asList("YLENEWS_FI_2011_S", "KLK_SV_1917"));
     private static final List<String> MODERN_PROTECTED_CORPORA = Collections.unmodifiableList(Arrays.asList());
 
 

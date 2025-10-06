@@ -15,7 +15,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
 	"lemma",
 	"msd",
-	"word"
+	"word",
+    "pos"
 })
 
 public class Token {
@@ -26,6 +27,8 @@ public class Token {
     private String msd;
     @JsonProperty("word")
     private String word;
+    @JsonProperty("pos")
+    private String pos;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -87,6 +90,17 @@ public class Token {
     @JsonProperty("word")
     public void setWord(String word) {
 	this.word = word;
+    }
+
+
+    @JsonProperty("pos")
+    public String getPos() {
+        return pos;
+    }
+
+    @JsonProperty("pos")
+    public void setPos(String pos) {
+        this.pos = pos;
     }
 
     @JsonAnyGetter

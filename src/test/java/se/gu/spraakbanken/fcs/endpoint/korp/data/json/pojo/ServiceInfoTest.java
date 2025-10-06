@@ -23,8 +23,8 @@ import static org.junit.Assert.assertNotNull;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.info.ServiceInfo;
 
 public class ServiceInfoTest {
-    private String jsonString = "{\"corpora\":[\"ROMI\"],\"cqp-version\":\"CQP version 3.4.9\",\"protected_corpora\":[],\"time\":0.0093}";
-    private String jsonString2 = "{\"corpora\":[\"FRAGELADAN\",\"LSI\",\"WIKIPEDIA-SV\"],\"cqp-version\":\"CQP version 3.4.9\",\"protected_corpora\":[\"LSI\",\"FRAGELADAN\"],\"time\":0.10500788688659668}";
+    private String jsonString = "{\"cqp_version\":\"CQP version 3.4.9\",\"corpora\":[\"ROMI\"],\"protected_corpora\":[],\"time\":0.0093}";
+    private String jsonString2 = "{\"cqp_version\":\"CQP version 3.4.9\",\"corpora\":[\"FRAGELADAN\",\"LSI\",\"WIKIPEDIA-SV\"],\"protected_corpora\":[\"LSI\",\"FRAGELADAN\"],\"time\":0.10500788688659668}";
 
     @Test
     public void serviceInfoSerialize() {

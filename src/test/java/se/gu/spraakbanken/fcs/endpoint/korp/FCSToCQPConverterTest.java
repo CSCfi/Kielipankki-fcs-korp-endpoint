@@ -118,7 +118,6 @@ public class FCSToCQPConverterTest {
     }
 
     @Test
-    @Ignore
     public void convertFCSRegexLiteral() throws SRUException {
         Map<String, String> params = new HashMap<String, String>();
         final String query = "[word = '?'/l & pos = 'PUNCT'] ";

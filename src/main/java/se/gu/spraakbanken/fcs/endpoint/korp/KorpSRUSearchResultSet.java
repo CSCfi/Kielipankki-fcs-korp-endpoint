@@ -1,9 +1,10 @@
 /**
- *
- * @license http://www.gnu.org/licenses/gpl-3.0.txt
- *  GNU General Public License v3
- */
-package se.gu.spraakbanken.fcs.endpoint.korp;
+*   @license http://www.gnu.org/licenses/gpl-3.0.txt
+*   GNU General Public License v3 
+*/ 
+
+import se.gu.spraakbanken.fcs.endpoint.korp.cqp.PosTranslator;
+import se.gu.spraakbanken.fcs.endpoint.korp.cqp.TranslatorChooser;
 
 import java.net.URI;
 import java.util.NoSuchElementException;
@@ -27,7 +28,6 @@ import eu.clarin.sru.server.fcs.XMLStreamWriterHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.gu.spraakbanken.fcs.endpoint.korp.cqp.SUCTranslator;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.info.CorporaInfo;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Kwic;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Match;
@@ -35,24 +35,26 @@ import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Query;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Token;
 
 /**
- * A result set of a <em>searchRetrieve</em> operation. It it used to iterate
- * over the result set and provides a method to serialize the record in the
- * requested format.
- * <p>
- * A <code>SRUSearchResultSet</code> object maintains a cursor pointing to its
- * current record. Initially the cursor is positioned before the first record.
- * The <code>next</code> method moves the cursor to the next record, and because
- * it returns <code>false</code> when there are no more records in the
- * <code>SRUSearchResultSet</code> object, it can be used in a
- * <code>while</code> loop to iterate through the result set.
- * </p>
- * <p>
- * This class needs to be implemented for the target search engine.
- * </p>
- *
- * @see <a href="http://www.loc.gov/standards/sru/specs/search-retrieve.html">
- *      SRU Search Retrieve Operation</a>
- */
+
+    A result set of a <em>searchRetrieve</em> operation. It it used to iterate
+    over the result set and provides a method to serialize the record in the
+    requested format.
+    <p>
+    A <code>SRUSearchResultSet</code> object maintains a cursor pointing to its
+    current record. Initially the cursor is positioned before the first record.
+    The <code>next</code> method moves the cursor to the next record, and because
+    it returns <code>false</code> when there are no more records in the
+    <code>SRUSearchResultSet</code> object, it can be used in a
+    <code>while</code> loop to iterate through the result set.
+    </p>
+    <p>
+    This class needs to be implemented for the target search engine.
+    </p>
+    @see <a href="http://www.loc.gov/standards/sru/specs/search-retrieve.html">
+
+     SRU Search Retrieve Operation</a>
+
+*/
 public class KorpSRUSearchResultSet extends SRUSearchResultSet {
 
     SRUServerConfig serverConfig = null;
@@ -120,7 +122,7 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
      * by a query, it must return -1.
      *
      * @return the total number of results or 0 if the query failed or -1 if the
-     *         search engine cannot determine the total number of results
+     * search engine cannot determine the total number of results
      */
     public int getTotalRecordCount() {
         if (resultSet != null) {
@@ -264,7 +266,7 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
     public void writeRecord(XMLStreamWriter writer)
             throws XMLStreamException {
         AdvancedDataViewWriter helper = new AdvancedDataViewWriter(AdvancedDataViewWriter.Unit.ITEM);
-        URI wordLayerId = URI.create("http://spraakbanken.gu.se/ns/fcs/layer/word");
+        URI wordLayerId = URI.create("http://spraakbanken.gu.se/ns/fcs/layer/word"); // TO DO: change
         URI lemmaLayerId = URI.create("http://spraakbanken.gu.se/ns/fcs/layer/lemma");
         URI posLayerId = URI.create("http://spraakbanken.gu.se/ns/fcs/layer/pos");
 
@@ -272,6 +274,8 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
         List<Token> tokens = kwic.getTokens();
         Match match = kwic.getMatch();
         String corpus = kwic.getCorpus();
+
+        PosTranslator posTranslator = TranslatorChooser.getTranslator(corpus);
 
         XMLStreamWriterHelper.writeStartResource(writer, corpus + "-" + match.getPosition(), null);
         XMLStreamWriterHelper.writeStartResourceFragment(writer, null, null);
@@ -282,7 +286,10 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                 long end = start + tokens.get(i).getWord().length();
                 helper.addSpan(wordLayerId, start, end, tokens.get(i).getWord());
                 try {
-                    helper.addSpan(posLayerId, start, end, SUCTranslator.fromSUC(tokens.get(i).getMsd()).get(0));
+                    String pos = tokens.get(i).getPos();
+                    if (pos != null && !pos.isEmpty()) {
+                        helper.addSpan(posLayerId, start, end, posTranslator.fromCorpus(pos).get(0));
+                    }
                 } catch (SRUException se) {
                 }
                 helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma());
@@ -294,7 +301,10 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
             long end = start + tokens.get(i).getWord().length();
             helper.addSpan(wordLayerId, start, end, tokens.get(i).getWord(), 1);
             try {
-                helper.addSpan(posLayerId, start, end, SUCTranslator.fromSUC(tokens.get(i).getMsd()).get(0), 1);
+                String pos = tokens.get(i).getPos();
+                if (pos != null && !pos.isEmpty()) {
+                    helper.addSpan(posLayerId, start, end, posTranslator.fromCorpus(pos).get(0), 1);
+                }
             } catch (SRUException se) {
             }
             helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma(), 1);
@@ -306,7 +316,10 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                 long end = start + tokens.get(i).getWord().length();
                 helper.addSpan(wordLayerId, start, end, tokens.get(i).getWord());
                 try {
-                    helper.addSpan(posLayerId, start, end, SUCTranslator.fromSUC(tokens.get(i).getMsd()).get(0));
+                    String pos = tokens.get(i).getPos();
+                    if (pos != null && !pos.isEmpty()) {
+                        helper.addSpan(posLayerId, start, end, posTranslator.fromCorpus(pos).get(0));
+                    }
                 } catch (SRUException se) {
                 }
                 helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma());
