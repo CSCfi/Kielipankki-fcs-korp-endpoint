@@ -56,6 +56,7 @@ public class ServiceInfo {
         Collections.addAll(corpora, Config.get("KLK_SV_corpora").split("\\s*,\\s*"));
         MODERN_CORPORA = Collections.unmodifiableList(corpora);
     }
+  
     private static final List<String> MODERN_PROTECTED_CORPORA = Collections.unmodifiableList(Arrays.asList());
 
 
