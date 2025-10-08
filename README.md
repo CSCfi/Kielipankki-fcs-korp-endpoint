@@ -31,6 +31,8 @@ cd Kielipankki-fcs-korp-endpoint
 
 # Build the WAR file with Maven
 mvn clean package -D maven.test.skip=true war:war
+# OR run tests with test config:
+mvn clean package -Dconfig.file=test-config.properties war:war
 
 # Migrate the war file from javax to jakarta (necessary for Tomcat11)
 ../jakartaee-migration-1.0.9/bin/migrate.sh target/fcs-korp-endpoint-0.1-kp-SNAPSHOT.war target/fcs-korp-endpoint-0.1-kp-SNAPSHOT-MIGRATED.war

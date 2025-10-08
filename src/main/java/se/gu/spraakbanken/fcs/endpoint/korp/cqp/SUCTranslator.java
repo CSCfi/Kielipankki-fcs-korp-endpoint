@@ -14,8 +14,9 @@ import java.util.Map;
 
 import eu.clarin.sru.server.SRUConstants;
 import eu.clarin.sru.server.SRUException;
+import se.gu.spraakbanken.fcs.endpoint.korp.cqp.PosTranslator;
 
-public class SUCTranslator {
+public class SUCTranslator implements PosTranslator {
     private static final Map<String, List<String>> TO_SUC = createToSuc();
     private static final Map<String, List<String>> TO_UD17 = createToUd17();
 
@@ -78,7 +79,7 @@ public class SUCTranslator {
      * @return A list of translated codes in SUC PoS.
      *
      */
-    public static List<String> toSUC(final String ud17Pos) throws SRUException {
+    public List<String> toCorpus(final String ud17Pos) throws SRUException {
 	List<String> res = null;
 	
 	res = TO_SUC.get(ud17Pos.toUpperCase());
@@ -96,15 +97,15 @@ public class SUCTranslator {
      * @return A list of translated codes in UD-17 PoS.
      *
      */
-    public static List<String> fromSUC(final String sucPos) throws SRUException {
+    public List<String> fromCorpus(final String sucPos) throws SRUException{
 	List<String> res = null;
-	int iop = sucPos.indexOf(".");
- 
-	res = TO_UD17.get((iop != -1 ? sucPos.substring(0, iop) : sucPos).toUpperCase());
+	String key = sucPos.toUpperCase();
+	//System.out.println("SUC POS key used for lookup = " + key); // debugging
+	res = TO_UD17.get(key);
 	if (res == null) {
 	    throw new SRUException(
 				   SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
-				   "unknown PoS code from search engine: " + (iop != -1 ? sucPos.substring(0, iop) : sucPos));
+				   "unknown PoS code from search engine: " + key);
 	}
 	return res;
     }

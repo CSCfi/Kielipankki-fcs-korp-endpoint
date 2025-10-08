@@ -37,6 +37,7 @@ import eu.clarin.sru.server.fcs.parser.QueryNode;
 import eu.clarin.sru.server.fcs.parser.QuerySegment;
 import eu.clarin.sru.server.fcs.parser.QuerySequence;
 import eu.clarin.sru.server.fcs.parser.RegexFlag;
+import se.gu.spraakbanken.fcs.endpoint.korp.cqp.TranslatorChooser;
 
 
 /**
@@ -207,7 +208,7 @@ public class FCSToCQPConverter {
 
 	    // Translate PoS value or just get the text/word layer as is.
 	    if (expression.getLayerIdentifier().equals("pos")) {
-		return translatePos(expression.getLayerIdentifier(), getOperator(expression.getOperator()), expression.getRegexValue());
+		return translatePos(expression.getLayerIdentifier(), getOperator(expression.getOperator()), expression.getRegexValue()); // TO DO: make a for loop that goes through every selected corpus
 	    } else if (expression.getLayerIdentifier().equals("lemma")) {
 		return getLemmaLayerFilter(expression);
 	    }
@@ -220,31 +221,33 @@ public class FCSToCQPConverter {
 	}
     }
 
-    private static String translatePos(final String layerIdentifier, final String operator, final String pos) throws SRUException {
-	List<String> sucT = SUCTranslator.toSUC(pos);
-	StringBuffer buf = new StringBuffer();
+    // Translate a UD17 PoS (from FCS) into the corpus-specific tagset using TranslatorChooser.java
+	private static String translatePos(final String layerIdentifier, final String operator, final String pos) throws SRUException {
+		// For now, hardcode "KLK"
+		PosTranslator translator = TranslatorChooser.getTranslator("KLK_SV");
 
-	buf.append(layerIdentifier);
-	buf.append(" ");
-	buf.append(operator);
-	buf.append(" '");
+		// Translate the UD tag into the target corpus tags
+		List<String> tags = translator.toCorpus(pos);
 
-	if (sucT.size() == 1) {
-	    buf.append(sucT.get(0));
-	} else {
-	    int i = 0;
-	    buf.append("(");
-	    for (String s : sucT) {
-		if (i > 0) {
-		    buf.append("|");
+		StringBuffer buf = new StringBuffer();
+		buf.append(layerIdentifier);
+		buf.append(" ");
+		buf.append(operator);
+		buf.append(" '");
+
+		if (tags.size() == 1) {
+			buf.append(tags.get(0));
+		} else {
+			buf.append("("); // if returned POS are more than 1, make OR's like: (NN|PM|NNP)
+			for (int i = 0; i < tags.size(); i++) {
+				if (i > 0) buf.append("|");
+				buf.append(tags.get(i));
+			}
+			buf.append(")");
 		}
-		buf.append(s);
-		i++;
-	    }
-	    buf.append(")");
+		return buf.append("'").toString();
 	}
-	return buf.append("'").toString();
-    }
+
 
     private static String getOperator(Operator op) {
 	if (op == Operator.NOT_EQUALS) {
