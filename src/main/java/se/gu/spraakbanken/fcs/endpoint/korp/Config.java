@@ -8,12 +8,15 @@ public final class Config {
     private static final Properties props = new Properties();
 
     static {
-        try (InputStream is = Config.class.getClassLoader()
-                                          .getResourceAsStream("config.properties")) {
+        // Allow selecting the file via -Dconfig.file=...; default to config.properties
+        String configFile = System.getProperty("config.file", "config.properties");
+
+        try (InputStream is = Config.class.getClassLoader().getResourceAsStream(configFile)) {
             if (is != null) {
                 props.load(is);
+                System.out.println("Loaded configuration from: " + configFile);
             } else {
-                System.err.println("config.properties not found on classpath");
+                System.err.println(configFile + " not found on classpath");
             }
         } catch (IOException e) {
             e.printStackTrace();

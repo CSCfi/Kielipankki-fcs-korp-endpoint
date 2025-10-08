@@ -99,14 +99,13 @@ public class SUCTranslator implements PosTranslator {
      */
     public List<String> fromCorpus(final String sucPos) throws SRUException{
 	List<String> res = null;
-	int iop = sucPos.indexOf(".");
-	String key = (iop != -1 ? sucPos.substring(0, iop) : sucPos).toUpperCase();
-	System.out.println("SUC POS key used for lookup = " + key); // debugging
+	String key = sucPos.toUpperCase();
+	//System.out.println("SUC POS key used for lookup = " + key); // debugging
 	res = TO_UD17.get(key);
 	if (res == null) {
 	    throw new SRUException(
 				   SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
-				   "unknown PoS code from search engine: " + (iop != -1 ? sucPos.substring(0, iop) : sucPos));
+				   "unknown PoS code from search engine: " + key);
 	}
 	return res;
     }

@@ -257,7 +257,7 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
     }
 
     /**
-     * Serialize the current record in the requested format.
+     * Serialize the current record in the requested format with POS translation.
      *
      * @param writer the {@link XMLStreamException} instance to be used
      * @throws XMLStreamException     an error occurred while serializing the result
@@ -268,7 +268,7 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
     public void writeRecord(XMLStreamWriter writer)
             throws XMLStreamException {
         AdvancedDataViewWriter helper = new AdvancedDataViewWriter(AdvancedDataViewWriter.Unit.ITEM);
-        URI wordLayerId = URI.create("http://spraakbanken.gu.se/ns/fcs/layer/word"); // TO DO: change
+        URI wordLayerId = URI.create("http://spraakbanken.gu.se/ns/fcs/layer/word");
         URI lemmaLayerId = URI.create("http://spraakbanken.gu.se/ns/fcs/layer/lemma");
         URI posLayerId = URI.create("http://spraakbanken.gu.se/ns/fcs/layer/pos");
 
@@ -283,6 +283,7 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
         XMLStreamWriterHelper.writeStartResourceFragment(writer, null, null);
 
         long start = 1;
+        // Loop over every token before the match (left context):
         if (match.getStart() != 1) {
             for (int i = 0; i < match.getStart(); i++) {
                 long end = start + tokens.get(i).getWord().length();
@@ -298,7 +299,8 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                 start = end + 1;
             }
         }
-
+        
+        // the match itself:
         for (int i = match.getStart(); i < match.getEnd(); i++) {
             long end = start + tokens.get(i).getWord().length();
             helper.addSpan(wordLayerId, start, end, tokens.get(i).getWord(), 1);
@@ -312,7 +314,8 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
             helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma(), 1);
             start = end + 1;
         }
-
+        
+        // after the match (right context): 
         if (tokens.size() > match.getEnd()) {
             for (int i = match.getEnd(); i < tokens.size(); i++) {
                 long end = start + tokens.get(i).getWord().length();

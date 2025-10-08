@@ -72,9 +72,8 @@ public class TDTTranslator implements PosTranslator {
     @Override
     public List<String> fromCorpus(final String tdtPos) throws SRUException {
         List<String> res = null;
-        int iop = tdtPos.indexOf("_");
-        String key = (iop != -1 ? tdtPos.substring(0, iop) : tdtPos).toUpperCase();
-        System.out.println("TDT POS key used for lookup = = " + key); // debugging
+        String key = tdtPos.toUpperCase();
+        //System.out.println("TDT POS key used for lookup = = " + key); // debugging
         res = TO_UD17.get(key);
         if (res == null) {
             throw new SRUException(
