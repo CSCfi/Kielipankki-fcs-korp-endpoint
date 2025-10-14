@@ -114,7 +114,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
             SRUQueryParserRegistry.Builder queryParserBuilder,
             Map<String, String> params) throws SRUConfigException {
         LOG.info("KorpEndpointSearchEngine::doInit {}", config.getPort());
-        List<String> openCorpora = ServiceInfo.getModernCorpora();
+        List<String> openCorpora = ServiceInfo.getModernCorpora(); // Defines the master list of “open/modern” corpora the endpoint is allowed to use 
         openCorporaInfo = CorporaInfo.getCorporaInfo(openCorpora);
     }
 
@@ -379,7 +379,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         boolean hasFcsContextCorpus = false;
         String fcsContextCorpus = "";
         for (String erd : request.getExtraRequestDataNames()) {
-            if ("x-fcs-context".equals(erd)) {
+            if ("x-fcs-context".equals(erd)) {  // x-fcs-context - extra request data, contains information on which corpora to run the query
                 hasFcsContextCorpus = true;
                 fcsContextCorpus = request.getExtraRequestData("x-fcs-context");
                 break;
@@ -393,7 +393,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
             // hdl%3A10794%2Fsbmoderna is the default
         }
 
-        Query queryRes = makeQuery(query, openCorporaInfo, request.getStartRecord(), request.getMaximumRecords());
+        Query queryRes = makeQuery(query, openCorporaInfo, request.getStartRecord(), request.getMaximumRecords()); // Second argument is the corpora to run the query on
         if (queryRes == null) {
             throw new SRUException(
                     SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,

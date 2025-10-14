@@ -1,0 +1,18 @@
+// defines the structure of the corpus metadata POJO (which isread from supported_corpora.json)
+package se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo;
+import java.util.List;
+
+public class CorpusMetadata {
+
+        private String tagset;
+        private String lang;
+        private List<String> corpora;
+
+        public String getTagset() { return tagset; }
+        public void setTagset(String tagset) { this.tagset = tagset; }
+        public String getLang() { return lang; }
+        public void setLang(String lang) { this.lang = lang; }
+        public List<String> getCorpora() { return corpora; }
+        public void setCorpora(List<String> corpora) { this.corpora = corpora; }
+
+}

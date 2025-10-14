@@ -1,5 +1,6 @@
 package se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.info;
 
+import java.util.Set;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import se.gu.spraakbanken.fcs.endpoint.korp.Config;
+import se.gu.spraakbanken.fcs.endpoint.korp.data.json.CorpusMetadataLoader;
+import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.CorpusMetadata;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -48,7 +51,7 @@ public class ServiceInfo {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     // The list of Kielipankki corpora
-    //private static final List<String> MODERN_CORPORA = Collections.unmodifiableList(Arrays.asList("KLK_SV_1917", "YLENEWS_FI_2011_S"));
+    /* List of available corpora is now read from the supported_corpora.json instead
     private static final List<String> MODERN_CORPORA;
     static {
         List<String> corpora = new ArrayList<>();
@@ -56,7 +59,28 @@ public class ServiceInfo {
         Collections.addAll(corpora, Config.get("KLK_SV_corpora").split("\\s*,\\s*"));
         MODERN_CORPORA = Collections.unmodifiableList(corpora);
     }
-  
+    */
+    
+    private static final List<String> MODERN_CORPORA;
+    static {
+        try {
+            CorpusMetadataLoader loader = new CorpusMetadataLoader();
+            List<String> list = new ArrayList<>();
+            // Flatten all corpora from supported_corpora.json
+            for (CorpusMetadata m : loader.loadFromClasspath().values()) {
+            if (m.getCorpora() != null) {list.addAll(m.getCorpora());}
+            }
+            if (list.isEmpty()) {
+            throw new IllegalStateException("supported_corpora.json contains no corpora");
+            }
+            MODERN_CORPORA = Collections.unmodifiableList(list);
+            // Debugging print:
+            System.out.println("MODERN_CORPORA loaded: " + MODERN_CORPORA.size());
+        } catch (IOException e) {
+        throw new IllegalStateException("Cannot read supported_corpora.json", e);
+        }
+    }
+
     private static final List<String> MODERN_PROTECTED_CORPORA = Collections.unmodifiableList(Arrays.asList());
 
 
@@ -243,5 +267,4 @@ public class ServiceInfo {
         }
         return modernCorpora;
     }
-
 }

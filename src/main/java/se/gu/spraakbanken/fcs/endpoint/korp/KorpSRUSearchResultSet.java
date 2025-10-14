@@ -315,7 +315,7 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
             start = end + 1;
         }
         
-        // after the match (right context): 
+        // after the match (right context):
         if (tokens.size() > match.getEnd()) {
             for (int i = match.getEnd(); i < tokens.size(); i++) {
                 long end = start + tokens.get(i).getWord().length();
