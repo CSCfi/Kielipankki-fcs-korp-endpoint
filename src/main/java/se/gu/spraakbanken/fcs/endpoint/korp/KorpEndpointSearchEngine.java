@@ -114,7 +114,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
             SRUQueryParserRegistry.Builder queryParserBuilder,
             Map<String, String> params) throws SRUConfigException {
         LOG.info("KorpEndpointSearchEngine::doInit {}", config.getPort());
-        List<String> openCorpora = ServiceInfo.getModernCorpora(); // Defines the master list of “open/modern” corpora the endpoint is allowed to use 
+        List<String> openCorpora = ServiceInfo.getModernCorpora(); // The master list of “open/modern” corpora the endpoint is allowed to use, from ServiceInfo.java
         openCorporaInfo = CorporaInfo.getCorporaInfo(openCorpora);
     }
 
@@ -376,6 +376,8 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
                             "' are not supported by this CLARIN-FCS Endpoint.");
         }
 
+        // compares x-fcs-context raw value to the hard-coded string "hdl%3A10794%2Fsbmoderna". 
+        // If it’s different, it logs that a specific corpus is being loaded, but then does nothing.
         boolean hasFcsContextCorpus = false;
         String fcsContextCorpus = "";
         for (String erd : request.getExtraRequestDataNames()) {
