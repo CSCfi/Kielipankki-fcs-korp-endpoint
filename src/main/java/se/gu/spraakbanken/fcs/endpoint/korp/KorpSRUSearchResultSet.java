@@ -35,6 +35,7 @@ import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Kwic;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Match;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Query;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Token;
+import se.gu.spraakbanken.fcs.endpoint.korp.CorpusTagsetMapper;
 
 /**
 
@@ -256,6 +257,25 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
         return null;
     }
 
+    // input: corpusID; output: POS translator for that corpus
+    private PosTranslator getTranslatorForCorpus(String corpusId) throws SRUException {
+        String tagset = CorpusTagsetMapper.getTagset(corpusId);
+        if (tagset == null) {
+            throw new SRUException(
+                    SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                    "Unknown corpus/tagset combination",
+                    "No tagset metadata found for corpus '" + corpusId + "'.");
+        }
+        try {
+            return TranslatorChooser.getTranslatorForTagset(tagset);
+        } catch (RuntimeException e) {
+            throw new SRUException(
+                    SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                    "Translator configuration error",
+                    "No translator configured for tagset '" + tagset + "'.");
+        }
+    }
+
     /**
      * Serialize the current record in the requested format with POS translation.
      *
@@ -277,12 +297,18 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
         Match match = kwic.getMatch();
         String corpus = kwic.getCorpus();
 
-        PosTranslator posTranslator = TranslatorChooser.getTranslator(corpus);
+        PosTranslator posTranslator;
+        try {
+            posTranslator = getTranslatorForCorpus(corpus);
+        } catch (SRUException e) {
+            throw new XMLStreamException("Failed to obtain POS translator for corpus " + corpus, e);
+        }
 
         XMLStreamWriterHelper.writeStartResource(writer, corpus + "-" + match.getPosition(), null);
         XMLStreamWriterHelper.writeStartResourceFragment(writer, null, null);
 
         long start = 1;
+        
         // Loop over every token before the match (left context):
         if (match.getStart() != 1) {
             for (int i = 0; i < match.getStart(); i++) {
@@ -291,9 +317,15 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                 try {
                     String pos = tokens.get(i).getPos();
                     if (pos != null && !pos.isEmpty()) {
-                        helper.addSpan(posLayerId, start, end, posTranslator.fromCorpus(pos).get(0));
+                        List<String> translated = posTranslator.fromCorpus(pos);
+                        if (!translated.isEmpty()) {
+                            helper.addSpan(posLayerId, start, end, translated.get(0));
+                        } else {
+                            throw new XMLStreamException("POS translator returned no UD tags for '" + pos + "' in left context");
+                        }
                     }
-                } catch (SRUException se) {
+                } catch (SRUException e) {
+                    throw new XMLStreamException("Failed to translate POS '" + tokens.get(i).getPos() + "' in left context", e);
                 }
                 helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma());
                 start = end + 1;
@@ -307,9 +339,15 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
             try {
                 String pos = tokens.get(i).getPos();
                 if (pos != null && !pos.isEmpty()) {
-                    helper.addSpan(posLayerId, start, end, posTranslator.fromCorpus(pos).get(0), 1);
+                    List<String> translated = posTranslator.fromCorpus(pos);
+                    if (!translated.isEmpty()) {
+                        helper.addSpan(posLayerId, start, end, translated.get(0), 1);
+                    } else {
+                        throw new XMLStreamException("POS translator returned no UD tags for '" + pos + "' in the match");
+                    }
                 }
-            } catch (SRUException se) {
+            } catch (SRUException e) {
+                throw new XMLStreamException("Failed to translate POS '" + tokens.get(i).getPos() + "' in the match", e);
             }
             helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma(), 1);
             start = end + 1;
@@ -323,9 +361,15 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                 try {
                     String pos = tokens.get(i).getPos();
                     if (pos != null && !pos.isEmpty()) {
-                        helper.addSpan(posLayerId, start, end, posTranslator.fromCorpus(pos).get(0));
+                        List<String> translated = posTranslator.fromCorpus(pos);
+                        if (!translated.isEmpty()) {
+                            helper.addSpan(posLayerId, start, end, translated.get(0));
+                        } else {
+                            throw new XMLStreamException("POS translator returned no UD tags for '" + pos + "' in right context");
+                        }
                     }
-                } catch (SRUException se) {
+                } catch (SRUException e) {
+                    throw new XMLStreamException("Failed to translate POS '" + tokens.get(i).getPos() + "' in right context", e);
                 }
                 helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma());
                 start = end + 1;

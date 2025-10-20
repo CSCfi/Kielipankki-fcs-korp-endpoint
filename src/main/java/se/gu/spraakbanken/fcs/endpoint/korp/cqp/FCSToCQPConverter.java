@@ -119,16 +119,21 @@ public class FCSToCQPConverter {
      * @throws eu.clarin.sru.server.SRUException If the query is too complex or it 
      * for any other reason cannot be performed
      */
-    public static String makeCQPFromFCS(final SRUQuery<QueryNode> query)
+    public static String makeCQPFromFCS(final SRUQuery<QueryNode> query, final String tagset)
 	throws SRUException {
+		
+		if (tagset == null || tagset.isEmpty()) {
+        	throw new SRUException(Constants.FCS_DIAGNOSTIC_GENERAL_QUERY_TOO_COMPLEX_CANNOT_PERFORM_QUERY, 
+			"No tagset specified for POS translation"); } // avoids cryptic errors if for some reason tagset wasn't passed
+
         QueryNode tree = query.getParsedQuery();
         LOG.debug("FCS-Query: {}", tree.toString());
 	//System.out.println("tree=" + tree.toString());	
         // A somewhat crude query translator
         if (tree instanceof QuerySequence) {
-	    return getQuerySequence(tree);
+	    return getQuerySequence(tree, tagset);
         } else if (tree instanceof QuerySegment) {
-	    return getQuerySegment(tree);
+	    return getQuerySegment(tree, tagset);
         } else {
             throw new SRUException(
 				   Constants.FCS_DIAGNOSTIC_GENERAL_QUERY_TOO_COMPLEX_CANNOT_PERFORM_QUERY,
@@ -136,14 +141,14 @@ public class FCSToCQPConverter {
         }
     }
 
-    private static String getQuerySequence(final QueryNode tree) throws SRUException {
+    private static String getQuerySequence(final QueryNode tree, final String tagset) throws SRUException {
 	List<String> children = new ArrayList<String>();
 	QuerySequence sequence = (QuerySequence) tree;
 
 	for (int i = 0; i < sequence.getChildCount(); i++) {
 	    QueryNode child = sequence.getChild(i);
 	    if (child instanceof QuerySegment) {
-		children.add(getQuerySegment(child));
+		children.add(getQuerySegment(child, tagset));
 	    }
 	}
 	StringBuffer sb = new StringBuffer();
@@ -153,18 +158,18 @@ public class FCSToCQPConverter {
 	return sb.toString();
     }
 
-    private static String getQuerySegment(final QueryNode tree) throws SRUException {
+    private static String getQuerySegment(final QueryNode tree, final String tagset) throws SRUException {
 	QuerySegment segment = (QuerySegment) tree;
 	QueryNode op = segment.getExpression();
 	if (op instanceof ExpressionAnd) {
-	    return "[" + getExpressionBoolOp(op, " & ") + "]";
+	    return "[" + getExpressionBoolOp(op, " & ", tagset) + "]";
 	} else if (op instanceof ExpressionOr) {
-	    return "[" + getExpressionBoolOp(op, " | ") + "]";
+	    return "[" + getExpressionBoolOp(op, " | ", tagset ) + "]";
 	} else {
 	    String occurrences = getOccurrences(segment.getMinOccurs(), segment.getMaxOccurs());
 	    QueryNode child = segment.getExpression();
 	    if (child instanceof Expression) {
-		return "[" + getExpression((Expression) child) + "]" + occurrences;
+		return "[" + getExpression((Expression) child, tagset) + "]" + occurrences;
 	    } else if (child instanceof ExpressionWildcard) {
 		return " []" + occurrences;
 	    } else {
@@ -185,18 +190,18 @@ public class FCSToCQPConverter {
 	}
     }
 
-    private static String getExpressionBoolOp(final QueryNode op, final String opString) throws SRUException {
+    private static String getExpressionBoolOp(final QueryNode op, final String opString,final String tagset) throws SRUException {
 	List<String> children = new ArrayList<String>();
 	for (int i = 0; i < op.getChildCount(); i++) {
 	    QueryNode child = op.getChild(i);
 	    if (child instanceof Expression) {
-		children.add(getExpression((Expression) child));
+		children.add(getExpression((Expression) child, tagset));
 	    }
 	}
 	return 	children.get(0) + opString + children.get(1);
     }
 
-    private static String getExpression(final Expression child) throws SRUException {
+    private static String getExpression(final Expression child, final String tagset) throws SRUException {
 	Expression expression = (Expression) child;
 	if ((expression.getLayerIdentifier().equals("text") || expression.getLayerIdentifier().equals("token") || expression.getLayerIdentifier().equals("word") || expression.getLayerIdentifier().equals("lemma") || expression.getLayerIdentifier().equals("pos")) &&
 	    (expression.getLayerQualifier() == null) &&
@@ -208,7 +213,7 @@ public class FCSToCQPConverter {
 
 	    // Translate PoS value or just get the text/word layer as is.
 	    if (expression.getLayerIdentifier().equals("pos")) {
-		return translatePos(expression.getLayerIdentifier(), getOperator(expression.getOperator()), expression.getRegexValue()); // TO DO: make a for loop that goes through every selected corpus
+		return translatePos(tagset, expression.getLayerIdentifier(), getOperator(expression.getOperator()), expression.getRegexValue()); // TO DO: make a for loop that goes through every selected corpus
 	    } else if (expression.getLayerIdentifier().equals("lemma")) {
 		return getLemmaLayerFilter(expression);
 	    }
@@ -222,9 +227,9 @@ public class FCSToCQPConverter {
     }
 
     // Translate a UD17 PoS (from FCS) into the corpus-specific tagset using TranslatorChooser.java
-	private static String translatePos(final String layerIdentifier, final String operator, final String pos) throws SRUException {
+	private static String translatePos(final String tagset, final String layerIdentifier, final String operator, final String pos) throws SRUException {
 		// For now, hardcode "KLK"
-		PosTranslator translator = TranslatorChooser.getTranslator("KLK_SV");
+		PosTranslator translator = TranslatorChooser.getTranslatorForTagset(tagset);
 
 		// Translate the UD tag into the target corpus tags
 		List<String> tags = translator.toCorpus(pos);

@@ -1,3 +1,5 @@
+// models the structure of the JSON response we get from the Korp API 
+
 package se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.info;
 
 import java.io.IOException;

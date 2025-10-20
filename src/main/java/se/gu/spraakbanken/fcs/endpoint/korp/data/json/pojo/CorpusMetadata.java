@@ -8,6 +8,7 @@ public class CorpusMetadata {
         private String lang;
         private List<String> corpora;
 
+        // Getters and setters necessary to allow Jackson to read and assign values to the fields tagset, lang, corpora
         public String getTagset() { return tagset; }
         public void setTagset(String tagset) { this.tagset = tagset; }
         public String getLang() { return lang; }

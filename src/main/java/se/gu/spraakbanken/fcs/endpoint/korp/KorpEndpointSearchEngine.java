@@ -7,6 +7,7 @@ package se.gu.spraakbanken.fcs.endpoint.korp;
 
 import java.io.File;
 import java.io.IOException;
+//import java.io.ObjectInputFilter.Config;
 import java.net.URI;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,6 +15,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 import javax.xml.XMLConstants;
@@ -42,11 +44,14 @@ import eu.clarin.sru.server.fcs.Layer;
 import eu.clarin.sru.server.fcs.ResourceInfo;
 import eu.clarin.sru.server.fcs.SimpleEndpointSearchEngineBase;
 import eu.clarin.sru.server.fcs.utils.SimpleEndpointDescriptionParser;
+import eu.clarin.sru.server.fcs.parser.QueryNode;
+import eu.clarin.sru.server.fcs.parser.Expression;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import se.gu.spraakbanken.fcs.endpoint.korp.Config;
 import se.gu.spraakbanken.fcs.endpoint.korp.cqp.FCSToCQPConverter;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.info.CorporaInfo;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.info.ServiceInfo;
@@ -351,6 +356,11 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
             SRURequest request, SRUDiagnosticList diagnostics)
             throws SRUException {
         String query;
+        Query queryRes;
+
+        //corpora to run the query on if POS is not in the query:
+        List<String> allCorpora = new ArrayList<>(openCorporaInfo.getCorpora().keySet());
+        
         if (request.isQueryType(Constants.FCS_QUERY_TYPE_CQL)) {
             /*
              * Got a CQL query (either SRU 1.1 or higher).
@@ -358,13 +368,48 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
              */
             final CQLQueryParser.CQLQuery q = request.getQuery(CQLQueryParser.CQLQuery.class);
             query = FCSToCQPConverter.makeCQPFromCQL(q);
+            queryRes = makeQuery(query, allCorpora, request.getStartRecord(), request.getMaximumRecords()); 
         } else if (request.isQueryType(Constants.FCS_QUERY_TYPE_FCS)) {
             /*
              * Got a FCS query (SRU 2.0).
              * Translate to a proper CQP query
              */
             final FCSQueryParser.FCSQuery q = request.getQuery(FCSQueryParser.FCSQuery.class);
-            query = FCSToCQPConverter.makeCQPFromFCS(q);
+            QueryNode root = q.getParsedQuery(); // q is the FCS query tree
+
+            // if query uses POS, get the map of tagset:corpora, use correct POS translator for each and send a Korp query
+            if (queryUsesPos(q.getParsedQuery())) {
+                Map<String, List<String>> corporaByTagset = groupCorporaByTagset();
+                List<Query> perTagsetResults = new ArrayList<>();
+                String firstCqp = null; //placeholder
+
+                for (Map.Entry<String, List<String>> entry : corporaByTagset.entrySet()) {
+                    String tagset = entry.getKey();
+                    List<String> corpora = entry.getValue();
+
+                    String cqpForTagset = FCSToCQPConverter.makeCQPFromFCS(q, tagset);
+                    if (firstCqp == null) { //placeholder
+                        firstCqp = cqpForTagset;
+                    }
+
+                    Query tagsetResult = makeQuery(cqpForTagset, corpora, request.getStartRecord(), request.getMaximumRecords());
+                    perTagsetResults.add(tagsetResult);
+                }
+
+                if (perTagsetResults.isEmpty()) { // only triggers if we get no result object at all
+                    throw new SRUException(
+                            SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                            "No results object returned for any tagset.");
+                }
+
+                query = firstCqp; // placeholder
+                queryRes = perTagsetResults.get(0);
+            } else {
+                // unchanged POS-free path
+                String defaultTagset = "SUC";
+                query = FCSToCQPConverter.makeCQPFromFCS(q, defaultTagset);
+                queryRes = makeQuery(query, allCorpora, request.getStartRecord(), request.getMaximumRecords());
+            }
         } else {
             /*
              * Got something else we don't support. Send error ...
@@ -395,7 +440,6 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
             // hdl%3A10794%2Fsbmoderna is the default
         }
 
-        Query queryRes = makeQuery(query, openCorporaInfo, request.getStartRecord(), request.getMaximumRecords()); // Second argument is the corpora to run the query on
         if (queryRes == null) {
             throw new SRUException(
                     SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
@@ -404,7 +448,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         return new KorpSRUSearchResultSet(config, request, diagnostics, queryRes, query, openCorporaInfo);
     }
 
-    protected Query makeQuery(final String cqpQuery, CorporaInfo openCorporaInfo, final int startRecord, final int maximumRecords) {
+    protected Query makeQuery(final String cqpQuery, final List<String> corpora, final int startRecord, final int maximumRecords) {
 	ObjectMapper mapper = new ObjectMapper();
 	String wsString = Config.get("web_service");
 	String queryString = "query?defaultcontext=1+sentence&show=msd,lemma,pos&cqp=";
@@ -412,7 +456,8 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
 	String endParam = "&end=" + (maximumRecords == 0 ? 250 : startRecord - 1 + maximumRecords - 1);
 	String corpusParam = "&corpus=";
 	    //"SUC2";
-	String corpusParamValues = CorporaInfo.getCorpusParameterValues(openCorporaInfo.getCorpora().keySet());
+	//String corpusParamValues = CorporaInfo.getCorpusParameterValues(openCorporaInfo.getCorpora().keySet());
+    String corpusParamValues = CorporaInfo.getCorpusParameterValues(corpora);
         try {
 	    URL korp = new URL(wsString + queryString + URLEncoder.encode(cqpQuery, "UTF-8") + startParam + endParam + corpusParam + corpusParamValues);
             // mapper.reader(Query.class).readValue(korp.openStream());
@@ -438,6 +483,33 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
 
     protected CorporaInfo getCorporaInfo() {
         return openCorporaInfo;
+    }
+/**
+ * Group the selected corpora (from openCorporaInfo) by tagset.
+ * Return a map where the key is the tagset (e.g. "SUC")
+ * and the value is the list of corpora that use that tagset.
+ */
+    private Map<String, List<String>> groupCorporaByTagset() {
+        return CorpusTagsetMapper.groupByTagset(openCorporaInfo.getCorpora().keySet());
+    }
+
+/**
+ * Walk and inspect the FCS query tree and detect if "pos" layer is used
+ */    
+    private boolean queryUsesPos(QueryNode node) {
+        if (node instanceof Expression) { // expression is like [pos="NOUN"] or like [word="milk"]
+            Expression expr = (Expression) node;
+            return "pos".equalsIgnoreCase(expr.getLayerIdentifier());
+    }
+        
+        // if not an Expression (e.g., sequence), inspect children 
+        for (int i = 0; i < node.getChildCount(); i++) {
+            QueryNode child = node.getChild(i);
+            if (queryUsesPos(child)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
