@@ -103,7 +103,7 @@ public class Query {
 	if (hits != null) {
 	    return hits;
 	}
-	return new Integer("-1");
+	return new Integer("-1"); // if hits are null, we take it to be -1
     }
 
     /**

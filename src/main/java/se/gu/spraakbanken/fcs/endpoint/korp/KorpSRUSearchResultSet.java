@@ -35,7 +35,6 @@ import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Kwic;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Match;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Query;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Token;
-import se.gu.spraakbanken.fcs.endpoint.korp.CorpusTagsetMapper;
 
 /**
 
@@ -63,14 +62,14 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
     SRUServerConfig serverConfig = null;
     SRURequest request = null;
 
-    private boolean incremental = false;
+    //private boolean incremental = false;
     private String query;
     private CorporaInfo corporaInfo;
     private Query resultSet;
     private String resultSetId = null;
     private int currentRecordCursor = 0;
-    private int currentMaxRecords = 250;
-    private int currentPageMaxRecords = 100;
+    //private int currentMaxRecords = 250;
+    //private int currentPageMaxRecords = 100;
     private int startRecord = 1;
     private int maximumRecords = 1000;
     private int recordCount; // startRecord + currentPageMaxRecords
@@ -257,25 +256,6 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
         return null;
     }
 
-    // input: corpusID; output: POS translator for that corpus
-    private PosTranslator getTranslatorForCorpus(String corpusId) throws SRUException {
-        String tagset = CorpusTagsetMapper.getTagset(corpusId);
-        if (tagset == null) {
-            throw new SRUException(
-                    SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
-                    "Unknown corpus/tagset combination",
-                    "No tagset metadata found for corpus '" + corpusId + "'.");
-        }
-        try {
-            return TranslatorChooser.getTranslatorForTagset(tagset);
-        } catch (RuntimeException e) {
-            throw new SRUException(
-                    SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
-                    "Translator configuration error",
-                    "No translator configured for tagset '" + tagset + "'.");
-        }
-    }
-
     /**
      * Serialize the current record in the requested format with POS translation.
      *
@@ -297,12 +277,8 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
         Match match = kwic.getMatch();
         String corpus = kwic.getCorpus();
 
-        PosTranslator posTranslator;
-        try {
-            posTranslator = getTranslatorForCorpus(corpus);
-        } catch (SRUException e) {
-            throw new XMLStreamException("Failed to obtain POS translator for corpus " + corpus, e);
-        }
+        String tagset = CorpusTagsetMapper.getTagsetForCorpus(corpus);
+        PosTranslator posTranslator = TranslatorChooser.getTranslatorForTagset(tagset);
 
         XMLStreamWriterHelper.writeStartResource(writer, corpus + "-" + match.getPosition(), null);
         XMLStreamWriterHelper.writeStartResourceFragment(writer, null, null);

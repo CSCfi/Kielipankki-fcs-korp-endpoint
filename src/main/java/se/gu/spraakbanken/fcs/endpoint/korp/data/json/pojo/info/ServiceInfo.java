@@ -49,19 +49,8 @@ public class ServiceInfo {
     private Double time;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    // The list of Kielipankki corpora
-    /* List of available corpora is now read from the supported_corpora.json instead
-    private static final List<String> MODERN_CORPORA;
-    static {
-        List<String> corpora = new ArrayList<>();
-        Collections.addAll(corpora, Config.get("YLENEWS_FI_corpora").split("\\s*,\\s*"));
-        Collections.addAll(corpora, Config.get("KLK_SV_corpora").split("\\s*,\\s*"));
-        MODERN_CORPORA = Collections.unmodifiableList(corpora);
-    }
-    */
     
-    private static final List<String> MODERN_CORPORA;
+    private static final List<String> KORP_CORPORA;
     static {
         try {
             CorpusMetadataLoader loader = new CorpusMetadataLoader();
@@ -73,15 +62,15 @@ public class ServiceInfo {
             if (list.isEmpty()) {
             throw new IllegalStateException("supported_corpora.json contains no corpora");
             }
-            MODERN_CORPORA = Collections.unmodifiableList(list);
+            KORP_CORPORA = Collections.unmodifiableList(list);
             // Debugging print:
-            System.out.println("MODERN_CORPORA loaded: " + MODERN_CORPORA.size());
+            System.out.println("KORP_CORPORA loaded: " + KORP_CORPORA.size());
         } catch (IOException e) {
         throw new IllegalStateException("Cannot read supported_corpora.json", e);
         }
     }
 
-    private static final List<String> MODERN_PROTECTED_CORPORA = Collections.unmodifiableList(Arrays.asList());
+    private static final List<String> KORP_PROTECTED_CORPORA = Collections.unmodifiableList(Arrays.asList());
 
 
     /**
@@ -243,8 +232,8 @@ public class ServiceInfo {
     public static List<String> getOpenCorporaNonLive() {
         List<String> openCorpora = new ArrayList<String>();
         boolean isPC = false;
-        for (String corpus : MODERN_CORPORA) {
-            for (String pCorpus : MODERN_PROTECTED_CORPORA) {
+        for (String corpus : KORP_CORPORA) {
+            for (String pCorpus : KORP_PROTECTED_CORPORA) {
                 if (corpus.equals(pCorpus)) {
                     isPC = true;
                 }
@@ -257,14 +246,14 @@ public class ServiceInfo {
         return openCorpora;
     }
 
-    public static List<String> getModernCorpora() {
-        List<String> modernCorpora = new ArrayList<String>();
+    public static List<String> getKorpCorpora() {
+        List<String> korpCorpora = new ArrayList<String>();
         List<String> openCorpora = ServiceInfo.getOpenCorporaLive();
         for (String corpus : openCorpora) {
-            if (MODERN_CORPORA.contains(corpus)) {
-                modernCorpora.add(corpus);
+            if (KORP_CORPORA.contains(corpus)) {
+                korpCorpora.add(corpus);
             }
         }
-        return modernCorpora;
+        return korpCorpora;
     }
 }

@@ -7,7 +7,7 @@ package se.gu.spraakbanken.fcs.endpoint.korp.cqp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+//import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -228,7 +228,6 @@ public class FCSToCQPConverter {
 
     // Translate a UD17 PoS (from FCS) into the corpus-specific tagset using TranslatorChooser.java
 	private static String translatePos(final String tagset, final String layerIdentifier, final String operator, final String pos) throws SRUException {
-		// For now, hardcode "KLK"
 		PosTranslator translator = TranslatorChooser.getTranslatorForTagset(tagset);
 
 		// Translate the UD tag into the target corpus tags

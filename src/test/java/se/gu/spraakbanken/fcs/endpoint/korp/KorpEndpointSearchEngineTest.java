@@ -5,6 +5,8 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
@@ -115,7 +117,9 @@ public class KorpEndpointSearchEngineTest {
         final String query = "[word = 'och'][pos = 'NOUN']";
         final String cqpQuery = "[word = 'och'][pos = 'NN']";
 
-        Query queryRes = kese.makeQuery(cqpQuery, openCorporaInfo, 0, 25);
+        List<String> corpora = new ArrayList<>(openCorporaInfo.getCorpora().keySet()); // makeQuery takes a *list* of corpora
+
+        Query queryRes = kese.makeQuery(cqpQuery, corpora, 0, 25);
         KorpSRUSearchResultSet kssrs = new KorpSRUSearchResultSet(config, diagnostics, queryRes, query,
                 openCorporaInfo);
         StringWriter sw = new StringWriter();
