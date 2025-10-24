@@ -119,7 +119,9 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
             SRUQueryParserRegistry.Builder queryParserBuilder,
             Map<String, String> params) throws SRUConfigException {
         LOG.info("KorpEndpointSearchEngine::doInit {}", config.getPort());
-        List<String> openCorpora = ServiceInfo.getKorpCorpora(); // The master list of Korp corpora the endpoint is allowed to use, from ServiceInfo.java
+
+        // The master list of Korp corpora the endpoint is allowed to use, from ServiceInfo.java. Includes Korp metadata,
+        List<String> openCorpora = ServiceInfo.getKorpCorpora(); 
         openCorporaInfo = CorporaInfo.getCorporaInfo(openCorpora);
     }
 
@@ -356,7 +358,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
     public SRUSearchResultSet search(SRUServerConfig config,
             SRURequest request, SRUDiagnosticList diagnostics)
             throws SRUException {
-        String query;
+        String query = null;
         Query queryRes;
 
         //corpora to run the query on if POS is not in the query:
@@ -369,7 +371,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
              */
             final CQLQueryParser.CQLQuery q = request.getQuery(CQLQueryParser.CQLQuery.class);
             query = FCSToCQPConverter.makeCQPFromCQL(q);
-            queryRes = makeQuery(query, selectedCorpora, request.getStartRecord(), request.getMaximumRecords()); // TO DO: STILL ALWAYS RUNS ON ALL CORPORA
+            queryRes = makeQuery(query, selectedCorpora, request.getStartRecord(), request.getMaximumRecords());
         } else if (request.isQueryType(Constants.FCS_QUERY_TYPE_FCS)) {
             /*
              * Got a FCS query (SRU 2.0).
@@ -380,6 +382,8 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
             // if query uses POS, get the map of tagset:corpora, use correct POS translator for each and send a Korp query
             if (queryUsesPos(q.getParsedQuery())) { // q is the FCS query tree
                 Map<String, List<String>> corporaByPid = groupCorporaByPid(selectedCorpora);
+                
+                // If multiple PIDs are in the query, throw an error 
                 if (corporaByPid.size() > 1) {
                     throw new SRUException(
                         SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
@@ -387,8 +391,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
                 }
 
                 List<Query> perPidResults = new ArrayList<>();
-                String firstCqp = null; //placeholder that stores the first result. I left it in case at some point you
-                // want to run unrestricted search on multiple PIDs at the same time 
+
                 for (Map.Entry<String, List<String>> entry : corporaByPid.entrySet()) {
                     String pid = entry.getKey();
                     List<String> corpora = entry.getValue();
@@ -400,10 +403,9 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
                                 SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
                                 "Metadata error", e.getMessage());
                     }
+
                     String cqpForPid = FCSToCQPConverter.makeCQPFromFCS(q, tagset);
-                    if (firstCqp == null) {
-                        firstCqp = cqpForPid; // placeholder
-                    }
+                    query = cqpForPid;
                     Query pidResult = makeQuery(cqpForPid, corpora,
                             request.getStartRecord(), request.getMaximumRecords());
                     if (pidResult != null) {
@@ -417,10 +419,9 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
                             SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
                             "No results object returned for any PID.");
                 }
-                query = firstCqp; 
-                queryRes = perPidResults.get(0); // only returns the result of the first Korp query!
+                queryRes = perPidResults.get(0); // returns the result of the first Korp query (which can only be 1 now)
             } else {
-                // unchanged POS-free path
+                // POS-free path. Can even be run on all the corpora on many PIDs because no POS translation
                 String defaultTagset = "SUC";
                 query = FCSToCQPConverter.makeCQPFromFCS(q, defaultTagset);
                 queryRes = makeQuery(query, selectedCorpora, request.getStartRecord(), request.getMaximumRecords());
@@ -459,8 +460,6 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         String startParam = "&start=" + (startRecord == 1 ? 0 : startRecord - 1);
         String endParam = "&end=" + (maximumRecords == 0 ? 250 : startRecord - 1 + maximumRecords - 1);
         String corpusParam = "&corpus=";
-            //"SUC2";
-        //String corpusParamValues = CorporaInfo.getCorpusParameterValues(openCorporaInfo.getCorpora().keySet());
         String corpusParamValues = CorporaInfo.getCorpusParameterValues(corpora);
             try {
             URL korp = new URL(wsString + queryString + URLEncoder.encode(cqpQuery, "UTF-8") + startParam + endParam + corpusParam + corpusParamValues);
@@ -489,8 +488,8 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         return openCorporaInfo;
     }
 /**
- * Group the selected corpora (from openCorporaInfo) by tagset.
- * Return a map where the key is the tagset (e.g. "SUC")
+ * Group the selected corpora (from openCorporaInfo) by PID.
+ * Return a map where the key is the PID
  * and the value is the list of corpora that use that tagset.
  */
     private Map<String, List<String>> groupCorporaByPid(Collection<String> corpora) {
