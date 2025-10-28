@@ -29,7 +29,7 @@ public class TDTTranslator implements PosTranslator {
         tdt.put("ADP", Arrays.asList("ADP"));
         tdt.put("CCONJ", Arrays.asList("C"));
         tdt.put("SCONJ", Arrays.asList("C"));
-        tdt.put("INTJ", Arrays.asList("INTJ"));
+        tdt.put("INTJ", Arrays.asList("INTERJ"));
         tdt.put("PUNCT", Arrays.asList("PUNCT"));
         tdt.put("SYM", Arrays.asList("SYMB"));
         tdt.put("X", Arrays.asList("FOREIGN"));
@@ -46,7 +46,7 @@ public class TDTTranslator implements PosTranslator {
         ud17.put("NUM", Arrays.asList("NUM"));
         ud17.put("ADP", Arrays.asList("ADP"));
         ud17.put("C", Arrays.asList("CCONJ", "SCONJ"));
-        ud17.put("INTJ", Arrays.asList("INTJ"));
+        ud17.put("INTERJ", Arrays.asList("INTJ"));
         ud17.put("PUNCT", Arrays.asList("PUNCT"));
         ud17.put("SYMB", Arrays.asList("SYM"));
         ud17.put("FOREIGN", Arrays.asList("X"));

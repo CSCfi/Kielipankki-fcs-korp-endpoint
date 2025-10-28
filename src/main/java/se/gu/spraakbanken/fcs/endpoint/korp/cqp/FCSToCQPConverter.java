@@ -213,7 +213,7 @@ public class FCSToCQPConverter {
 
 	    // Translate PoS value or just get the text/word layer as is.
 	    if (expression.getLayerIdentifier().equals("pos")) {
-		return translatePos(tagset, expression.getLayerIdentifier(), getOperator(expression.getOperator()), expression.getRegexValue()); // TO DO: make a for loop that goes through every selected corpus
+		return translatePos(tagset, expression.getLayerIdentifier(), getOperator(expression.getOperator()), expression.getRegexValue());
 	    } else if (expression.getLayerIdentifier().equals("lemma")) {
 		return getLemmaLayerFilter(expression);
 	    }
