@@ -215,7 +215,7 @@ public class FCSToCQPConverter {
 	    if (expression.getLayerIdentifier().equals("pos")) {
 		return translatePos(tagset, expression.getLayerIdentifier(), getOperator(expression.getOperator()), expression.getRegexValue());
 	    } else if (expression.getLayerIdentifier().equals("lemma")) {
-		return getLemmaLayerFilter(expression);
+		return getLemmaLayerFilter(expression, tagset);
 	    }
 	    return getWordLayerFilter(expression);
 
@@ -297,45 +297,58 @@ public class FCSToCQPConverter {
 	return buf.toString();
     }
 
-    private static String getLemmaLayerFilter(Expression expression) {
-	boolean contRegexFlag = false;
-	StringBuffer buf = new StringBuffer();
-	buf.append(expression.getLayerIdentifier());
-	buf.append(" ");
-	if (expression.getOperator() == Operator.NOT_EQUALS) {
-	    buf.append("not contains");
-	} else if (expression.getOperator() == Operator.EQUALS) {
-	    buf.append("contains");
-	}
-	buf.append(" '");
-	buf.append(expression.getRegexValue());
-	buf.append("'");
-	if (expression.getRegexFlags() != null) {
-	    if (expression.getRegexFlags().contains(RegexFlag.CASE_INSENSITIVE)) {
-		buf.append(" %c");
-		contRegexFlag = true;
-	    }
-	    if (expression.getRegexFlags().contains(RegexFlag.CASE_SENSITIVE)) {
-	    }
-	    if (expression.getRegexFlags().contains(RegexFlag.LITERAL_MATCHING)) {
-		if (!contRegexFlag) {
-		    buf.append(" %");
-		}
-		buf.append("l");
-		contRegexFlag = true;
-	    }
-	    if (expression.getRegexFlags().contains(RegexFlag.IGNORE_DIACRITICS)) {
-		if (!contRegexFlag) {
-		    buf.append(" %");
+    private static String getLemmaLayerFilter(Expression expression, String tagset) {
+		boolean contRegexFlag = false;
+    	boolean useContains = !"TDT".equalsIgnoreCase(tagset); // true for SUC, false for TDT
+		StringBuffer buf = new StringBuffer();
+		buf.append(expression.getLayerIdentifier());
+		buf.append(" ");
+
+		// if useContains is True, the CQP is built using "corpus lemma contains query lemma" (for SUC), else
+		// it is built using "corpus lemma = query lemma" (for TDT)
+        if (expression.getOperator() == Operator.NOT_EQUALS) {
+            if (useContains) {
+                buf.append("not contains");
+            } else {
+                buf.append("!=");
+            }
+        } else if (expression.getOperator() == Operator.EQUALS) {
+            if (useContains) {
+                buf.append("contains");
+            } else {
+                buf.append("=");
+            }
+        }
+
+		buf.append(" '");
+		buf.append(expression.getRegexValue());
+		buf.append("'");
+		    if (useContains && expression.getRegexFlags() != null) {
+			if (expression.getRegexFlags().contains(RegexFlag.CASE_INSENSITIVE)) {
+			buf.append(" %c");
+			contRegexFlag = true;
 			}
-		buf.append("d");
-		contRegexFlag = true;
-	    }
-	    if (contRegexFlag) {
-		//buf.append(" ");
-	    }
-	}
-	return buf.toString();
+			if (expression.getRegexFlags().contains(RegexFlag.CASE_SENSITIVE)) {
+			}
+			if (expression.getRegexFlags().contains(RegexFlag.LITERAL_MATCHING)) {
+			if (!contRegexFlag) {
+				buf.append(" %");
+			}
+			buf.append("l");
+			contRegexFlag = true;
+			}
+			if (expression.getRegexFlags().contains(RegexFlag.IGNORE_DIACRITICS)) {
+			if (!contRegexFlag) {
+				buf.append(" %");
+				}
+			buf.append("d");
+			contRegexFlag = true;
+			}
+			if (contRegexFlag) {
+			//buf.append(" ");
+			}
+		}
+		return buf.toString();
     }
 
 }
