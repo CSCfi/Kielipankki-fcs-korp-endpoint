@@ -1,9 +1,9 @@
 /*
-
 Loads the supported_corpora.json once and provides methods:
     getTagsetForCorpus(corpusId) - returns the tagset for a corpus, used for POS translation in KorpSRUSearchResultSet
     getTagsetForPid(String)} - same for Pid
     groupByPid(CorpusIds) - takes a list of corpora to search in and retruns a map pid:[list of corpusIDs in that PID]
+    getCorporaForPid(String pid) – expand a PID to the list of corpus IDs it contains.
 
 If any corpus metadata is missing, it throws an exception. 
 */
