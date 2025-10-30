@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 
 import javax.servlet.ServletContext;
 import javax.xml.XMLConstants;
@@ -54,6 +53,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.gu.spraakbanken.fcs.endpoint.korp.cqp.FCSToCQPConverter;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.info.CorporaInfo;
+import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.info.Corpus;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.info.ServiceInfo;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.query.Query;
 
@@ -436,14 +436,6 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
                             request.getQueryType() +
                             "' are not supported by this CLARIN-FCS Endpoint.");
         }
-        
-        // erd is extra request data
-        // loop over every extra request data, if it's 'x-fcs-context', store the value and break
-        for (String erd : request.getExtraRequestDataNames()) {
-            if ("x-fcs-context".equals(erd)) {  // x-fcs-context - extra request data, contains information on which corpora to run the query
-                break;
-            }
-        }
 
         if (queryRes == null) {
             throw new SRUException(
@@ -488,7 +480,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         return openCorporaInfo;
     }
 /**
- * Group the selected corpora (from openCorporaInfo) by PID.
+ * Group the selected corpora by PID.
  * Return a map where the key is the PID
  * and the value is the list of corpora that use that tagset.
  */
@@ -516,25 +508,48 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
     }
 
 /*
- * Checks whether x-fcs-context is present in the query. If not, returns all corpora
- * If present, splits the list on commas.
+ * Checks whether x-fcs-context is present in the query. If not present or contains a comma (multiple PIDs),
+ * throws an exception. Otherwise takes one PID and returns the list of corpora IDs within that PID.
  */
     private List<String> resolveCorporaSelection(SRURequest request) throws SRUException {
         String context = request.getExtraRequestData("x-fcs-context");
-        if (context == null) {
-            return new ArrayList<>(openCorporaInfo.getCorpora().keySet());
-        }
-        String[] parts = context.split(",");
-        LinkedHashSet<String> unique = new LinkedHashSet<>();
-        for (String raw : parts) {
-        if (!openCorporaInfo.getCorpora().containsKey(raw.trim())) {
+
+        if (context == null || context.isBlank()) {
             throw new SRUException(
                     SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
-                    "Corpus '" + raw.trim() + "' from x-fcs-context is not in supported_corpora.");
+                    "This endpoint requires x-fcs-context to be present and contain one PID.");
         }
-            unique.add(raw.trim());
+
+        if (context.contains(",")) {
+            throw new SRUException(
+                    SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                    "Multiple PIDs in x-fcs-context are not supported by this endpoint.");
+        }
+
+        // get the corpora IDs for PID
+        String pid = context.trim();
+        List<String> corporaForPid;
+        try {
+            corporaForPid = CorpusTagsetMapper.getCorporaForPid(pid);
+        } catch (IllegalStateException e) {
+            throw new SRUException(
+                    SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                    "PID '" + pid + "' from x-fcs-context is not in supported_corpora.json.",
+                    e);
+        }
+        
+        // check if all the corporaIDs from the PID got a metadata object from Korp
+        Map<String, Corpus> availableCorpora = openCorporaInfo.getCorpora();
+        for (String corpusId : corporaForPid) {
+            if (!availableCorpora.containsKey(corpusId)) {
+                throw new SRUException(
+                        SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                        "PID '" + pid + "' references corpus '" + corpusId +
+                        "', which is not available in Korp.");
             }
-        return new ArrayList<>(unique);
+        }
+
+        return new ArrayList<>(corporaForPid);
     }
 
 

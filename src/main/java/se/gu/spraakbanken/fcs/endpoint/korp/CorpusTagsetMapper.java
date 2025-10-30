@@ -112,4 +112,12 @@ private CorpusTagsetMapper() {
         return tagset;
     }
 
+    public static List<String> getCorporaForPid(String pid) {
+        CorpusMetadata metadata = PID_TO_METADATA.get(pid);
+        if (metadata == null) {
+            throw new IllegalStateException("Unknown PID '" + pid + "' in supported_corpora.json.");
+        }
+        return Collections.unmodifiableList(new ArrayList<>(metadata.getCorpora()));
+    }
+
 }
