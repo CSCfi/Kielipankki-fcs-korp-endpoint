@@ -63,7 +63,7 @@ public class ServiceInfo {
             throw new IllegalStateException("supported_corpora.json contains no corpora");
             }
             KORP_CORPORA = Collections.unmodifiableList(list);
-            // Debugging print:
+            // Logging print:
             System.out.println("KORP_CORPORA loaded: " + KORP_CORPORA.size());
         } catch (IOException e) {
         throw new IllegalStateException("Cannot read supported_corpora.json", e);

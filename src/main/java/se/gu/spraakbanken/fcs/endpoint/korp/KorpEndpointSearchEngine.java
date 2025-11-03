@@ -361,7 +361,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         String query = null;
         Query queryRes;
 
-        //corpora to run the query on if POS is not in the query:
+        // list of corporaIDs (from one PID) to run the query on if POS is not in the query:
         List<String> selectedCorpora = resolveCorporaSelection(request);
         
         if (request.isQueryType(Constants.FCS_QUERY_TYPE_CQL)) {
