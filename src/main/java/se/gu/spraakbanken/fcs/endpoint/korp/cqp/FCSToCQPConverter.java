@@ -7,7 +7,6 @@ package se.gu.spraakbanken.fcs.endpoint.korp.cqp;
 
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,9 +212,9 @@ public class FCSToCQPConverter {
 
 	    // Translate PoS value or just get the text/word layer as is.
 	    if (expression.getLayerIdentifier().equals("pos")) {
-		return translatePos(tagset, expression.getLayerIdentifier(), getOperator(expression.getOperator()), expression.getRegexValue());
+		return translatePos(tagset, expression);
 	    } else if (expression.getLayerIdentifier().equals("lemma")) {
-		return getLemmaLayerFilter(expression);
+		return getLemmaLayerFilter(expression, tagset);
 	    }
 	    return getWordLayerFilter(expression);
 
@@ -227,16 +226,16 @@ public class FCSToCQPConverter {
     }
 
     // Translate a UD17 PoS (from FCS) into the corpus-specific tagset using TranslatorChooser.java
-	private static String translatePos(final String tagset, final String layerIdentifier, final String operator, final String pos) throws SRUException {
+	private static String translatePos(final String tagset, final Expression expression) throws SRUException {
 		PosTranslator translator = TranslatorChooser.getTranslatorForTagset(tagset);
 
 		// Translate the UD tag into the target corpus tags
-		List<String> tags = translator.toCorpus(pos);
+		List<String> tags = translator.toCorpus(expression.getRegexValue());
 
 		StringBuffer buf = new StringBuffer();
-		buf.append(layerIdentifier);
+		buf.append(expression.getLayerIdentifier());
 		buf.append(" ");
-		buf.append(operator);
+		buf.append(getOperator(expression.getOperator()));
 		buf.append(" '");
 
 		if (tags.size() == 1) {
@@ -297,45 +296,59 @@ public class FCSToCQPConverter {
 	return buf.toString();
     }
 
-    private static String getLemmaLayerFilter(Expression expression) {
-	boolean contRegexFlag = false;
-	StringBuffer buf = new StringBuffer();
-	buf.append(expression.getLayerIdentifier());
-	buf.append(" ");
-	if (expression.getOperator() == Operator.NOT_EQUALS) {
-	    buf.append("not contains");
-	} else if (expression.getOperator() == Operator.EQUALS) {
-	    buf.append("contains");
-	}
-	buf.append(" '");
-	buf.append(expression.getRegexValue());
-	buf.append("'");
-	if (expression.getRegexFlags() != null) {
-	    if (expression.getRegexFlags().contains(RegexFlag.CASE_INSENSITIVE)) {
-		buf.append(" %c");
-		contRegexFlag = true;
-	    }
-	    if (expression.getRegexFlags().contains(RegexFlag.CASE_SENSITIVE)) {
-	    }
-	    if (expression.getRegexFlags().contains(RegexFlag.LITERAL_MATCHING)) {
-		if (!contRegexFlag) {
-		    buf.append(" %");
-		}
-		buf.append("l");
-		contRegexFlag = true;
-	    }
-	    if (expression.getRegexFlags().contains(RegexFlag.IGNORE_DIACRITICS)) {
-		if (!contRegexFlag) {
-		    buf.append(" %");
+    private static String getLemmaLayerFilter(Expression expression, String tagset) {
+		boolean contRegexFlag = false;
+    	boolean useContains = !"TDT".equalsIgnoreCase(tagset); // true for SUC, false for TDT
+		StringBuffer buf = new StringBuffer();
+		buf.append(expression.getLayerIdentifier());
+		buf.append(" ");
+
+		// if useContains is True, the CQP is built using "corpus lemma contains query lemma" (for SUC), else
+		// it is built using "corpus lemma = query lemma" (for TDT). This is because in SUC lemmas are annotated as a list,
+		// while in TDT it's just a string which should match fully
+        if (expression.getOperator() == Operator.NOT_EQUALS) {
+            if (useContains) {
+                buf.append("not contains");
+            } else {
+                buf.append("!=");
+            }
+        } else if (expression.getOperator() == Operator.EQUALS) {
+            if (useContains) {
+                buf.append("contains");
+            } else {
+                buf.append("=");
+            }
+        }
+
+		buf.append(" '");
+		buf.append(expression.getRegexValue());
+		buf.append("'");
+		    if (useContains && expression.getRegexFlags() != null) {
+			if (expression.getRegexFlags().contains(RegexFlag.CASE_INSENSITIVE)) {
+			buf.append(" %c");
+			contRegexFlag = true;
 			}
-		buf.append("d");
-		contRegexFlag = true;
-	    }
-	    if (contRegexFlag) {
-		//buf.append(" ");
-	    }
-	}
-	return buf.toString();
+			if (expression.getRegexFlags().contains(RegexFlag.CASE_SENSITIVE)) {
+			}
+			if (expression.getRegexFlags().contains(RegexFlag.LITERAL_MATCHING)) {
+			if (!contRegexFlag) {
+				buf.append(" %");
+			}
+			buf.append("l");
+			contRegexFlag = true;
+			}
+			if (expression.getRegexFlags().contains(RegexFlag.IGNORE_DIACRITICS)) {
+			if (!contRegexFlag) {
+				buf.append(" %");
+				}
+			buf.append("d");
+			contRegexFlag = true;
+			}
+			if (contRegexFlag) {
+			//buf.append(" ");
+			}
+		}
+		return buf.toString();
     }
 
 }
