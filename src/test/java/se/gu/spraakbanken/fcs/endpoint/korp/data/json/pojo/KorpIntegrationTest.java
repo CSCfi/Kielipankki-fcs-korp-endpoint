@@ -1,4 +1,4 @@
-package se.gu.spraakbanken.fcs.endpoint.korp;
+package se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;

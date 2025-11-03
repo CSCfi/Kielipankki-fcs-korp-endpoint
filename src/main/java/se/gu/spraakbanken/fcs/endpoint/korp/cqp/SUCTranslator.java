@@ -5,7 +5,6 @@
  */
 package se.gu.spraakbanken.fcs.endpoint.korp.cqp;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import java.util.Map;
 
 import eu.clarin.sru.server.SRUConstants;
 import eu.clarin.sru.server.SRUException;
-import se.gu.spraakbanken.fcs.endpoint.korp.cqp.PosTranslator;
 
 public class SUCTranslator implements PosTranslator {
     private static final Map<String, List<String>> TO_SUC = createToSuc();

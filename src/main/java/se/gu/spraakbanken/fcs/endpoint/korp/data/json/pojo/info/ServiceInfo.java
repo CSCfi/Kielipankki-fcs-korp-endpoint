@@ -1,5 +1,6 @@
 package se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.info;
 
+import java.util.Set;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import se.gu.spraakbanken.fcs.endpoint.korp.Config;
+import se.gu.spraakbanken.fcs.endpoint.korp.data.json.CorpusMetadataLoader;
+import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.CorpusMetadata;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -46,18 +49,28 @@ public class ServiceInfo {
     private Double time;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    // The list of Kielipankki corpora
-    //private static final List<String> MODERN_CORPORA = Collections.unmodifiableList(Arrays.asList("KLK_SV_1917", "YLENEWS_FI_2011_S"));
-    private static final List<String> MODERN_CORPORA;
+    
+    private static final List<String> KORP_CORPORA;
     static {
-        List<String> corpora = new ArrayList<>();
-        Collections.addAll(corpora, Config.get("YLENEWS_FI_corpora").split("\\s*,\\s*"));
-        Collections.addAll(corpora, Config.get("KLK_SV_corpora").split("\\s*,\\s*"));
-        MODERN_CORPORA = Collections.unmodifiableList(corpora);
+        try {
+            CorpusMetadataLoader loader = new CorpusMetadataLoader();
+            List<String> list = new ArrayList<>();
+            // Flatten all corpora from supported_corpora.json
+            for (CorpusMetadata m : loader.loadFromClasspath().values()) {
+            if (m.getCorpora() != null) {list.addAll(m.getCorpora());}
+            }
+            if (list.isEmpty()) {
+            throw new IllegalStateException("supported_corpora.json contains no corpora");
+            }
+            KORP_CORPORA = Collections.unmodifiableList(list);
+            // Logging print:
+            System.out.println("KORP_CORPORA loaded: " + KORP_CORPORA.size());
+        } catch (IOException e) {
+        throw new IllegalStateException("Cannot read supported_corpora.json", e);
+        }
     }
-  
-    private static final List<String> MODERN_PROTECTED_CORPORA = Collections.unmodifiableList(Arrays.asList());
+
+    private static final List<String> KORP_PROTECTED_CORPORA = Collections.unmodifiableList(Arrays.asList());
 
 
     /**
@@ -219,8 +232,8 @@ public class ServiceInfo {
     public static List<String> getOpenCorporaNonLive() {
         List<String> openCorpora = new ArrayList<String>();
         boolean isPC = false;
-        for (String corpus : MODERN_CORPORA) {
-            for (String pCorpus : MODERN_PROTECTED_CORPORA) {
+        for (String corpus : KORP_CORPORA) {
+            for (String pCorpus : KORP_PROTECTED_CORPORA) {
                 if (corpus.equals(pCorpus)) {
                     isPC = true;
                 }
@@ -233,15 +246,14 @@ public class ServiceInfo {
         return openCorpora;
     }
 
-    public static List<String> getModernCorpora() {
-        List<String> modernCorpora = new ArrayList<String>();
+    public static List<String> getKorpCorpora() {
+        List<String> korpCorpora = new ArrayList<String>();
         List<String> openCorpora = ServiceInfo.getOpenCorporaLive();
         for (String corpus : openCorpora) {
-            if (MODERN_CORPORA.contains(corpus)) {
-                modernCorpora.add(corpus);
+            if (KORP_CORPORA.contains(corpus)) {
+                korpCorpora.add(corpus);
             }
         }
-        return modernCorpora;
+        return korpCorpora;
     }
-
 }

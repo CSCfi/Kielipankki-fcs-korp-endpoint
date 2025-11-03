@@ -14,6 +14,9 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 import javax.servlet.ServletContext;
 import javax.xml.XMLConstants;
@@ -42,6 +45,8 @@ import eu.clarin.sru.server.fcs.Layer;
 import eu.clarin.sru.server.fcs.ResourceInfo;
 import eu.clarin.sru.server.fcs.SimpleEndpointSearchEngineBase;
 import eu.clarin.sru.server.fcs.utils.SimpleEndpointDescriptionParser;
+import eu.clarin.sru.server.fcs.parser.QueryNode;
+import eu.clarin.sru.server.fcs.parser.Expression;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -114,7 +119,9 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
             SRUQueryParserRegistry.Builder queryParserBuilder,
             Map<String, String> params) throws SRUConfigException {
         LOG.info("KorpEndpointSearchEngine::doInit {}", config.getPort());
-        List<String> openCorpora = ServiceInfo.getModernCorpora();
+
+        // The master list of Korp corpora the endpoint is allowed to use, from ServiceInfo.java. Includes Korp metadata,
+        List<String> openCorpora = ServiceInfo.getKorpCorpora(); 
         openCorporaInfo = CorporaInfo.getCorporaInfo(openCorpora);
     }
 
@@ -158,6 +165,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
     }
 
     /**
+     * Unused
      * Convenience method for parsing a string to boolean. Values <code>1</code>,
      * <code>true</code>, <code>yes</code> yield a <em>true</em> boolean value
      * as a result, all others (including <code>null</code>) a <em>false</em>
@@ -350,7 +358,12 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
     public SRUSearchResultSet search(SRUServerConfig config,
             SRURequest request, SRUDiagnosticList diagnostics)
             throws SRUException {
-        String query;
+        String query = null;
+        Query queryRes;
+
+        // list of corporaIDs (from one PID) to run the query on if POS is not in the query:
+        List<String> selectedCorpora = resolveCorporaSelection(request);
+        
         if (request.isQueryType(Constants.FCS_QUERY_TYPE_CQL)) {
             /*
              * Got a CQL query (either SRU 1.1 or higher).
@@ -358,13 +371,61 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
              */
             final CQLQueryParser.CQLQuery q = request.getQuery(CQLQueryParser.CQLQuery.class);
             query = FCSToCQPConverter.makeCQPFromCQL(q);
+            queryRes = makeQuery(query, selectedCorpora, request.getStartRecord(), request.getMaximumRecords());
         } else if (request.isQueryType(Constants.FCS_QUERY_TYPE_FCS)) {
             /*
              * Got a FCS query (SRU 2.0).
              * Translate to a proper CQP query
              */
             final FCSQueryParser.FCSQuery q = request.getQuery(FCSQueryParser.FCSQuery.class);
-            query = FCSToCQPConverter.makeCQPFromFCS(q);
+
+            // if query uses POS, get the map of tagset:corpora, use correct POS translator for each and send a Korp query
+            if (queryUsesPos(q.getParsedQuery())) { // q is the FCS query tree
+                Map<String, List<String>> corporaByPid = groupCorporaByPid(selectedCorpora);
+                
+                // If multiple PIDs are in the query, throw an error 
+                if (corporaByPid.size() > 1) {
+                    throw new SRUException(
+                        SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                        "POS queries spanning multiple PIDs are not supported by this endpoint.");
+                }
+
+                List<Query> perPidResults = new ArrayList<>();
+
+                for (Map.Entry<String, List<String>> entry : corporaByPid.entrySet()) {
+                    String pid = entry.getKey();
+                    List<String> corpora = entry.getValue();
+                    String tagset;
+                    try {
+                        tagset = CorpusTagsetMapper.getTagsetForPid(pid);
+                    } catch (IllegalStateException e) {
+                        throw new SRUException(
+                                SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                                "Metadata error", e.getMessage());
+                    }
+
+                    String cqpForPid = FCSToCQPConverter.makeCQPFromFCS(q, tagset);
+                    query = cqpForPid;
+                    Query pidResult = makeQuery(cqpForPid, corpora,
+                            request.getStartRecord(), request.getMaximumRecords());
+                    if (pidResult != null) {
+                        perPidResults.add(pidResult);
+                    } else {
+                        LOG.warn("Korp returned null result for PID '{}' (corpora {}).", pid, corpora);
+                    }
+                }
+                if (perPidResults.isEmpty()) {
+                    throw new SRUException(
+                            SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                            "No results object returned for any PID.");
+                }
+                queryRes = perPidResults.get(0); // returns the result of the first Korp query (which can only be 1 now)
+            } else {
+                // POS-free path. Can even be run on all the corpora on many PIDs because no POS translation
+                String defaultTagset = "SUC";
+                query = FCSToCQPConverter.makeCQPFromFCS(q, defaultTagset);
+                queryRes = makeQuery(query, selectedCorpora, request.getStartRecord(), request.getMaximumRecords());
+            }
         } else {
             /*
              * Got something else we don't support. Send error ...
@@ -375,25 +436,15 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
                             request.getQueryType() +
                             "' are not supported by this CLARIN-FCS Endpoint.");
         }
-
-        boolean hasFcsContextCorpus = false;
-        String fcsContextCorpus = "";
+        
+        // erd is extra request data
+        // loop over every extra request data, if it's 'x-fcs-context', store the value and break
         for (String erd : request.getExtraRequestDataNames()) {
-            if ("x-fcs-context".equals(erd)) {
-                hasFcsContextCorpus = true;
-                fcsContextCorpus = request.getExtraRequestData("x-fcs-context");
+            if ("x-fcs-context".equals(erd)) {  // x-fcs-context - extra request data, contains information on which corpora to run the query
                 break;
             }
         }
-        if (hasFcsContextCorpus && !"".equals(fcsContextCorpus)) {
-            if (!"hdl%3A10794%2Fsbmoderna".equals(fcsContextCorpus)) {
-                LOG.info("Loading specific corpus data: '{}'", fcsContextCorpus);
-                // getCorporaInfo();
-            }
-            // hdl%3A10794%2Fsbmoderna is the default
-        }
 
-        Query queryRes = makeQuery(query, openCorporaInfo, request.getStartRecord(), request.getMaximumRecords());
         if (queryRes == null) {
             throw new SRUException(
                     SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
@@ -402,40 +453,89 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         return new KorpSRUSearchResultSet(config, request, diagnostics, queryRes, query, openCorporaInfo);
     }
 
-    protected Query makeQuery(final String cqpQuery, CorporaInfo openCorporaInfo, final int startRecord, final int maximumRecords) {
-	ObjectMapper mapper = new ObjectMapper();
-	String wsString = Config.get("web_service");
-	String queryString = "query?defaultcontext=1+sentence&show=msd,lemma,pos&cqp=";
-	String startParam = "&start=" + (startRecord == 1 ? 0 : startRecord - 1);
-	String endParam = "&end=" + (maximumRecords == 0 ? 250 : startRecord - 1 + maximumRecords - 1);
-	String corpusParam = "&corpus=";
-	    //"SUC2";
-	String corpusParamValues = CorporaInfo.getCorpusParameterValues(openCorporaInfo.getCorpora().keySet());
-        try {
-	    URL korp = new URL(wsString + queryString + URLEncoder.encode(cqpQuery, "UTF-8") + startParam + endParam + corpusParam + corpusParamValues);
-            // mapper.reader(Query.class).readValue(korp.openStream());
-	    // truncates the query string 
-	    // using URLConnection.getInputStream() instead. /ljo
-	    URLConnection connection = korp.openConnection();
-	    return mapper.reader(Query.class).readValue(connection.getInputStream());
-        } catch (JsonParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    protected Query makeQuery(final String cqpQuery, final List<String> corpora, final int startRecord, final int maximumRecords) {
+        ObjectMapper mapper = new ObjectMapper();
+        String wsString = Config.get("web_service");
+        String queryString = "query?defaultcontext=1+sentence&show=msd,lemma,pos&cqp=";
+        String startParam = "&start=" + (startRecord == 1 ? 0 : startRecord - 1);
+        String endParam = "&end=" + (maximumRecords == 0 ? 250 : startRecord - 1 + maximumRecords - 1);
+        String corpusParam = "&corpus=";
+        String corpusParamValues = CorporaInfo.getCorpusParameterValues(corpora);
+            try {
+            URL korp = new URL(wsString + queryString + URLEncoder.encode(cqpQuery, "UTF-8") + startParam + endParam + corpusParam + corpusParamValues);
+                // mapper.reader(Query.class).readValue(korp.openStream());
+            // truncates the query string 
+            // using URLConnection.getInputStream() instead. /ljo
+            URLConnection connection = korp.openConnection();
+            return mapper.reader(Query.class).readValue(connection.getInputStream());
+            } catch (JsonParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (JsonMappingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return null;
         }
-        return null;
-    }
 
     protected CorporaInfo getCorporaInfo() {
         return openCorporaInfo;
     }
+/**
+ * Group the selected corpora (from openCorporaInfo) by PID.
+ * Return a map where the key is the PID
+ * and the value is the list of corpora that use that tagset.
+ */
+    private Map<String, List<String>> groupCorporaByPid(Collection<String> corpora) {
+        return CorpusTagsetMapper.groupByPid(corpora);
+    }
+
+/**
+ * Walk and inspect the FCS query tree and detect if "pos" layer is used
+ */    
+    private boolean queryUsesPos(QueryNode node) {
+        if (node instanceof Expression) { // expression is like [pos="NOUN"] or like [word="milk"]
+            Expression expr = (Expression) node;
+            return "pos".equalsIgnoreCase(expr.getLayerIdentifier());
+    }
+        
+        // if not an Expression (e.g., sequence), inspect children 
+        for (int i = 0; i < node.getChildCount(); i++) {
+            QueryNode child = node.getChild(i);
+            if (queryUsesPos(child)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+/*
+ * Checks whether x-fcs-context is present in the query. If not, returns all corpora
+ * If present, splits the list on commas.
+ */
+    private List<String> resolveCorporaSelection(SRURequest request) throws SRUException {
+        String context = request.getExtraRequestData("x-fcs-context");
+        if (context == null) {
+            return new ArrayList<>(openCorporaInfo.getCorpora().keySet());
+        }
+        String[] parts = context.split(",");
+        LinkedHashSet<String> unique = new LinkedHashSet<>();
+        for (String raw : parts) {
+        if (!openCorporaInfo.getCorpora().containsKey(raw.trim())) {
+            throw new SRUException(
+                    SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                    "Corpus '" + raw.trim() + "' from x-fcs-context is not in supported_corpora.");
+        }
+            unique.add(raw.trim());
+            }
+        return new ArrayList<>(unique);
+    }
+
 
 }

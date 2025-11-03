@@ -40,7 +40,7 @@ public class FCSToCQPConverterTest {
         // params.put("query", "[text = 'användning']");
         SRUDiagnosticList diagnostics = new Diagnostic();
         final String resActual = FCSToCQPConverter
-                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics));
+                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics), "SUC");
 
         System.out.println(resActual);
         assertEquals(res, resActual);
@@ -54,7 +54,7 @@ public class FCSToCQPConverterTest {
         params.put("query", query);
         SRUDiagnosticList diagnostics = new Diagnostic();
         final String resActual = FCSToCQPConverter
-                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics));
+                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics), "SUC");
 
         System.out.println(resActual);
         assertEquals(res, resActual);
@@ -69,7 +69,7 @@ public class FCSToCQPConverterTest {
         // params.put("query", "[text = 'användning']");
         SRUDiagnosticList diagnostics = new Diagnostic();
         final String resActual = FCSToCQPConverter
-                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics));
+                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics), "SUC");
 
         System.out.println(resActual);
         assertEquals(res, resActual);
@@ -83,7 +83,7 @@ public class FCSToCQPConverterTest {
         params.put("query", query);
         SRUDiagnosticList diagnostics = new Diagnostic();
         final String resActual = FCSToCQPConverter
-                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics));
+                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics), "SUC");
 
         System.out.println(resActual);
         assertEquals(res, resActual);
@@ -97,7 +97,7 @@ public class FCSToCQPConverterTest {
         params.put("query", query);
         SRUDiagnosticList diagnostics = new Diagnostic();
         final String resActual = FCSToCQPConverter
-                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics));
+                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics), "SUC");
 
         System.out.println(resActual);
         assertEquals(res.trim(), resActual.trim());
@@ -111,7 +111,7 @@ public class FCSToCQPConverterTest {
         params.put("query", query);
         SRUDiagnosticList diagnostics = new Diagnostic();
         final String resActual = FCSToCQPConverter
-                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics));
+                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics), "SUC");
 
         System.out.println(resActual);
         assertEquals(res.trim(), resActual.trim());
@@ -125,7 +125,7 @@ public class FCSToCQPConverterTest {
         params.put("query", query);
         SRUDiagnosticList diagnostics = new Diagnostic();
         final String resActual = FCSToCQPConverter
-                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics));
+                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics), "SUC");
 
         System.out.println(resActual);
         // This fails right now since you get d too!
@@ -140,7 +140,7 @@ public class FCSToCQPConverterTest {
         params.put("query", query);
         SRUDiagnosticList diagnostics = new Diagnostic();
         final String resActual = FCSToCQPConverter
-                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics));
+                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics), "SUC");
 
         System.out.println(resActual);
         assertEquals(res, resActual);
@@ -154,7 +154,7 @@ public class FCSToCQPConverterTest {
         params.put("query", query);
         SRUDiagnosticList diagnostics = new Diagnostic();
         final String resActual = FCSToCQPConverter
-                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics));
+                .makeCQPFromFCS((new FCSQueryParser()).parseQuery(SRUVersion.VERSION_2_0, params, diagnostics), "SUC");
 
         System.out.println(resActual);
         assertEquals(res, resActual);

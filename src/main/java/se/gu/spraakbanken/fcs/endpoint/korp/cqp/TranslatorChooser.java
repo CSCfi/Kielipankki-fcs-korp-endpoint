@@ -1,12 +1,13 @@
 package se.gu.spraakbanken.fcs.endpoint.korp.cqp;
 
 public class TranslatorChooser {
-    public static PosTranslator getTranslator(String corpusName) {
-        if (corpusName.startsWith("KLK_SV")) {
+
+    public static PosTranslator getTranslatorForTagset(String tagset) {
+        if (tagset.equalsIgnoreCase("SUC")) {
             return new SUCTranslator();
-            } else if (corpusName.startsWith("YLENEWS_FI")) {
+        } else if (tagset.equalsIgnoreCase("TDT")) {
             return new TDTTranslator();
         }
-        throw new RuntimeException("Unknown corpus: " + corpusName);
+        throw new RuntimeException("Unknown tagset: " + tagset);
     }
 }
