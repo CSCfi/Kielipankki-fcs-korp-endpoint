@@ -38,7 +38,7 @@ public class CorporaInfo {
     @JsonProperty("total_size")
     private BigInteger totalSize;
     @JsonProperty("total_sentences")
-    private Integer totalSentences;
+    private BigInteger totalSentences;
     @JsonProperty("time")
     private Double time;
     @JsonIgnore
@@ -106,7 +106,7 @@ public class CorporaInfo {
      * The totalSentences
      */
     @JsonProperty("total_sentences")
-    public Integer getTotalSentences() {
+    public BigInteger getTotalSentences() {
 	return totalSentences;
     }
 
@@ -115,7 +115,7 @@ public class CorporaInfo {
      * @param totalSentences The total_sentences
      */
     @JsonProperty("total_sentences")
-    public void setTotalSentences(Integer totalSentences) {
+    public void setTotalSentences(BigInteger totalSentences) {
 	this.totalSentences = totalSentences;
     }
 

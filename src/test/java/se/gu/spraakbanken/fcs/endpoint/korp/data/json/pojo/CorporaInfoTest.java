@@ -128,7 +128,7 @@ public class CorporaInfoTest {
 	ci.setCorpus("ROMI", corpus);
 
 	ci.setTime(new Double("0.000441"));
-	ci.setTotalSentences(new Integer("2145718"));
+	ci.setTotalSentences(new BigInteger("2145718"));
 	ci.setTotalSize(new BigInteger("30911156"));
 
         String s = null;
