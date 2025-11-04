@@ -529,14 +529,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         // get the corpora IDs for PID
         String pid = context.trim();
         List<String> corporaForPid;
-        try {
-            corporaForPid = CorpusTagsetMapper.getCorporaForPid(pid);
-        } catch (IllegalStateException e) {
-            throw new SRUException(
-                    SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
-                    "PID '" + pid + "' from x-fcs-context is not in supported_corpora.json.",
-                    e);
-        }
+        corporaForPid = CorpusTagsetMapper.getCorporaForPid(pid);
         
         // check if all the corporaIDs from the PID got a metadata object from Korp
         Map<String, Corpus> availableCorpora = openCorporaInfo.getCorpora();

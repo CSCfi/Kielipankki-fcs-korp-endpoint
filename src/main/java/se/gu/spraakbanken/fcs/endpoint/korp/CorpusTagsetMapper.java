@@ -20,6 +20,8 @@ import java.util.Map;
 
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.CorpusMetadataLoader;
 import se.gu.spraakbanken.fcs.endpoint.korp.data.json.pojo.CorpusMetadata;
+import eu.clarin.sru.server.SRUConstants;
+import eu.clarin.sru.server.SRUException;
 
 public final class CorpusTagsetMapper {
 
@@ -99,7 +101,7 @@ private CorpusTagsetMapper() {
     public static String getTagsetForPid(String pid) {
         CorpusMetadata metadata = PID_TO_METADATA.get(pid);
         if (metadata == null) {
-            throw new IllegalStateException("Unknown PID '" + pid + "' in supported_corpora.json.");
+            throw new IllegalStateException("PID '" + pid + "' is not in supported_corpora.json.");
         }
         return metadata.getTagset();
     }
@@ -107,15 +109,17 @@ private CorpusTagsetMapper() {
     public static String getTagsetForCorpus(String corpusId) {
         String tagset = CORPUS_TO_TAGSET.get(corpusId);
         if (tagset == null) {
-            throw new IllegalStateException("Unknown corpus '" + corpusId + "' in supported_corpora.json.");
+            throw new IllegalStateException("Corpus '" + corpusId + "' is not in supported_corpora.json.");
         }
         return tagset;
     }
 
-    public static List<String> getCorporaForPid(String pid) {
+    public static List<String> getCorporaForPid(String pid) throws SRUException {
         CorpusMetadata metadata = PID_TO_METADATA.get(pid);
         if (metadata == null) {
-            throw new IllegalStateException("Unknown PID '" + pid + "' in supported_corpora.json.");
+            throw new SRUException(
+                    SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                    "PID '" + pid + "' from x-fcs-context is not in supported_corpora.json.");
         }
         return Collections.unmodifiableList(new ArrayList<>(metadata.getCorpora()));
     }
