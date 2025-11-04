@@ -520,7 +520,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
                     "This endpoint requires x-fcs-context to be present and contain one PID.");
         }
 
-        if (context.contains(",")) {
+        if (context.contains(",")) { // Will fail if we ever have a comma in a corpus name
             throw new SRUException(
                     SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
                     "Multiple PIDs in x-fcs-context are not supported by this endpoint.");
