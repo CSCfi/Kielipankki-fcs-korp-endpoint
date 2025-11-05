@@ -43,6 +43,6 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>KPKorpSRUServlet</servlet-name>
-    <url-pattern>/</url-pattern>
+    <url-pattern>/*</url-pattern>
   </servlet-mapping>
 </web-app>
