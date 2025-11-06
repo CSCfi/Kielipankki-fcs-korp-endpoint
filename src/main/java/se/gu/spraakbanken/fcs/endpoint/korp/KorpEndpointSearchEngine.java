@@ -364,6 +364,18 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         // list of corporaIDs (from one PID) to run the query on if POS is not in the query:
         List<String> selectedCorpora = resolveCorporaSelection(request);
         
+        // get the tagset for current PID (necessary to enable lemma search on POS-free path)
+        final String pid = request.getExtraRequestData("x-fcs-context").trim();
+        
+        String tagset = null;
+        try {
+            tagset = CorpusTagsetMapper.getTagsetForPid(pid);
+        } catch (IllegalStateException e) {
+            throw new SRUException(
+                    SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
+                    "Metadata error", e.getMessage());
+        }
+        
         if (request.isQueryType(Constants.FCS_QUERY_TYPE_CQL)) {
             /*
              * Got a CQL query (either SRU 1.1 or higher).
@@ -393,16 +405,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
                 List<Query> perPidResults = new ArrayList<>();
 
                 for (Map.Entry<String, List<String>> entry : corporaByPid.entrySet()) {
-                    String pid = entry.getKey();
                     List<String> corpora = entry.getValue();
-                    String tagset;
-                    try {
-                        tagset = CorpusTagsetMapper.getTagsetForPid(pid);
-                    } catch (IllegalStateException e) {
-                        throw new SRUException(
-                                SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
-                                "Metadata error", e.getMessage());
-                    }
 
                     String cqpForPid = FCSToCQPConverter.makeCQPFromFCS(q, tagset);
                     query = cqpForPid;
@@ -422,9 +425,9 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
                 queryRes = perPidResults.get(0); // returns the result of the first Korp query (which can only be 1 now)
             } else {
                 // POS-free path. Can even be run on all the corpora on many PIDs because no POS translation
-                String defaultTagset = "SUC";
-                query = FCSToCQPConverter.makeCQPFromFCS(q, defaultTagset);
-                queryRes = makeQuery(query, selectedCorpora, request.getStartRecord(), request.getMaximumRecords());
+                // needs to be aware of the tagset for correct lemma matching ("contains" in SUC vs "=" in TDT) in FCSToCQPConverter.java
+            query = FCSToCQPConverter.makeCQPFromFCS(q, tagset);
+            queryRes = makeQuery(query, selectedCorpora, request.getStartRecord(), request.getMaximumRecords());
             }
         } else {
             /*
@@ -537,8 +540,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
             if (!availableCorpora.containsKey(corpusId)) {
                 throw new SRUException(
                         SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
-                        "PID '" + pid + "' references corpus '" + corpusId +
-                        "', which is not available in Korp.");
+                        String.format("PID '%s' references corpus '%s', which is not available in Korp.", pid, corpusId));
             }
         }
 
