@@ -297,10 +297,12 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                         if (!translated.isEmpty()) {
                             helper.addSpan(posLayerId, start, end, translated.get(0));
                         } else {
-                            throw new XMLStreamException("POS translator returned no UD tags for '" + pos + "' in left context");
+                            System.err.println("POS translator returned no UD tags for '" + pos + "' in left context");
+                            throw new XMLStreamException("POS translator returned no UD tags for '" + pos + "' in left context"); // needs logging to be set up
                         }
                     }
                 } catch (SRUException e) {
+                    System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in "+corpus+" (match)");
                     throw new XMLStreamException("Failed to translate POS '" + tokens.get(i).getPos() + "' in left context", e);
                 }
                 helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma());
@@ -319,10 +321,12 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                     if (!translated.isEmpty()) {
                         helper.addSpan(posLayerId, start, end, translated.get(0), 1);
                     } else {
+                        System.err.println("POS translator returned no UD tags for '" + pos + "' in the match");
                         throw new XMLStreamException("POS translator returned no UD tags for '" + pos + "' in the match");
                     }
                 }
             } catch (SRUException e) {
+                System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in "+corpus+" (match)");
                 throw new XMLStreamException("Failed to translate POS '" + tokens.get(i).getPos() + "' in the match", e);
             }
             helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma(), 1);
@@ -341,10 +345,12 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                         if (!translated.isEmpty()) {
                             helper.addSpan(posLayerId, start, end, translated.get(0));
                         } else {
+                            System.err.println("POS translator returned no UD tags for '" + pos + "' in right context");
                             throw new XMLStreamException("POS translator returned no UD tags for '" + pos + "' in right context");
                         }
                     }
                 } catch (SRUException e) {
+                    System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in "+corpus+" (match)");
                     throw new XMLStreamException("Failed to translate POS '" + tokens.get(i).getPos() + "' in right context", e);
                 }
                 helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma());
