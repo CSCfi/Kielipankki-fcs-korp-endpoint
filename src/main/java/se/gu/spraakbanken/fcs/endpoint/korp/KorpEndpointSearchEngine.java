@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.servlet.ServletContext;
 import javax.xml.XMLConstants;
@@ -455,6 +456,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
         String startParam = "&start=" + (startRecord == 1 ? 0 : startRecord - 1);
         String endParam = "&end=" + (maximumRecords == 0 ? 250 : startRecord - 1 + maximumRecords - 1);
         String corpusParam = "&corpus=";
+        Collections.reverse(corpora); // give corpora to Korp in reverse order
         String corpusParamValues = CorporaInfo.getCorpusParameterValues(corpora);
             try {
             URL korp = new URL(wsString + queryString + URLEncoder.encode(cqpQuery, "UTF-8") + startParam + endParam + corpusParam + corpusParamValues);

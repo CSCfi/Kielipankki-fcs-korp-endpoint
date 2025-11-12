@@ -21,10 +21,14 @@ public class TDTTranslator implements PosTranslator {
     private static Map<String, List<String>> createToTDT() {
         Map<String, List<String>> tdt = new HashMap<>();
         tdt.put("NOUN", Arrays.asList("N"));
+        tdt.put("PROPN", Arrays.asList("N"));
         tdt.put("VERB", Arrays.asList("V"));
+        tdt.put("AUX", Arrays.asList("V"));
         tdt.put("ADJ", Arrays.asList("A"));
         tdt.put("ADV", Arrays.asList("ADV"));
+        tdt.put("PART", Arrays.asList("ADV"));
         tdt.put("PRON", Arrays.asList("PRON"));
+        tdt.put("DET", Arrays.asList("PRON"));
         tdt.put("NUM", Arrays.asList("NUM"));
         tdt.put("ADP", Arrays.asList("ADP"));
         tdt.put("CCONJ", Arrays.asList("C"));
@@ -38,6 +42,7 @@ public class TDTTranslator implements PosTranslator {
 
     private static Map<String, List<String>> createToUd17() {
         Map<String, List<String>> ud17 = new HashMap<>();
+        //ud17.put("PROPN", Arrays.asList("PROPN")); // remove!!!
         ud17.put("N", Arrays.asList("NOUN", "PROPN"));
         ud17.put("V", Arrays.asList("VERB", "AUX"));
         ud17.put("A", Arrays.asList("ADJ"));
@@ -50,6 +55,7 @@ public class TDTTranslator implements PosTranslator {
         ud17.put("PUNCT", Arrays.asList("PUNCT"));
         ud17.put("SYMB", Arrays.asList("SYM"));
         ud17.put("FOREIGN", Arrays.asList("X"));
+        ud17.put("OTHER_UNK", Arrays.asList("X")); // present in YLENEWS
         return Collections.unmodifiableMap(ud17);
     }
 
