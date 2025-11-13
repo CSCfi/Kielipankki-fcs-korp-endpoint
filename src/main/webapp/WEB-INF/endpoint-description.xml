@@ -20,14 +20,14 @@
   <Resources>
 
 	<!-- YLE News corpora (TDT) -->	
-	<Resource pid="lb-2022032205">
+	<Resource pid="urn:nbn:fi:lb-2022032205">
 	  <Title xml:lang="fi">Ylen uutiset 2011–2021</Title>
 	  <Title xml:lang="sv">Yles nyheter 2011–2021</Title>
 	  <Title xml:lang="en">YLE News 2011–2021</Title>
 	  <Description xml:lang="fi">Korpus, joka sisältää Ylen (https://yle.fi) vuosien 2011–2021 artikkelit satunnaistettuina lauseina, on saatavilla Kielipankin Korp-palvelun kautta – Kielipankki, Suomen kielipankki.</Description>
 	  <Description xml:lang="sv">Korpusen, som innehåller artiklar från YLE (https://yle.fi) från åren 2011–2021 i form av omkastade meningar, finns tillgänglig via Korp i Kielipankki – Finlands språkbank.</Description>
 	  <Description xml:lang="en">The corpus, containing the articles from YLE https://yle.fi from 2011-2021, as scrambled sentences, is available via Korp in Kielipankki – the Language Bank of Finland.</Description>
-	  <LandingPageURI>https://clarino.uib.no/comedi/editor/lb-2022032205</LandingPageURI>
+	  <LandingPageURI>https://urn.fi/urn:nbn:fi:lb-2022032205</LandingPageURI>
 	  <Languages>
             <Language>fin</Language>
 	  </Languages>
@@ -35,15 +35,31 @@
 	  <AvailableLayers ref="word lemma pos"/>
 	</Resource>
 
-	<!-- KLK_SV corpora (SUC) -->	
-	<Resource pid="lb-2016050301">
-		<Title xml:lang="fi">Kansalliskirjaston lehtikokoelman ruotsinkielinen osuus</Title>
-		<Title xml:lang="sv">Nationalbibliotekets svenskspråkiga tidningar och tidskrifter</Title>
-		<Title xml:lang="en">Swedish-language newspapers and magazines of The Finnish National Library</Title>
-		<Description xml:lang="fi">Ruotsinkieliset sanomalehdet ja aikakauslehdet Kansalliskirjaston digitaalisissa kokoelmissa, Kielipankki-versio.</Description>
-		<Description xml:lang="sv">Svenskspråkiga tidningar och tidskrifter i Nationalbibliotekets digitala samlingar, Kielipankki-version.</Description>
-		<Description xml:lang="en">Swedish-language newspapers and magazines in the National Library's digital collections, Kielipankki version.</Description>
-		<LandingPageURI>https://clarino.uib.no/comedi/editor/lb-2016050301</LandingPageURI>
+	<!-- KLK_SV corpora 1771 – 1894 (SUC) -->	
+	<Resource pid="urn:nbn:fi:lb-2016050301_1771-1894">
+		<Title xml:lang="fi">Kansalliskirjaston lehtikokoelman ruotsinkielinen osuus (1771 – 1894)</Title>
+		<Title xml:lang="sv">Nationalbibliotekets svenskspråkiga tidningar och tidskrifter (1771 – 1894)</Title>
+		<Title xml:lang="en">Swedish-language newspapers and magazines of The Finnish National Library (1771 – 1894)</Title>
+		<Description xml:lang="fi">Ruotsinkieliset sanomalehdet ja aikakauslehdet Kansalliskirjaston digitaalisissa kokoelmissa (1771 – 1894), Kielipankki-versio.</Description>
+		<Description xml:lang="sv">Svenskspråkiga tidningar och tidskrifter i Nationalbibliotekets digitala samlingar (1771 – 1894), Kielipankki-version.</Description>
+		<Description xml:lang="en">Swedish-language newspapers and magazines in the National Library's digital collections (1771 – 1894), Kielipankki version.</Description>
+		<LandingPageURI>https://urn.fi/urn:nbn:fi:lb-2016050301</LandingPageURI>
+		<Languages>
+	<Language>swe</Language>
+		</Languages>
+		<AvailableDataViews ref="hits adv"/>
+		<AvailableLayers ref="word lemma pos"/>
+	</Resource>
+
+		<!-- KLK_SV corpora (SUC) -->	
+	<Resource pid="urn:nbn:fi:lb-2016050301_1895-1986">
+		<Title xml:lang="fi">Kansalliskirjaston lehtikokoelman ruotsinkielinen osuus (1895 – 1986)</Title>
+		<Title xml:lang="sv">Nationalbibliotekets svenskspråkiga tidningar och tidskrifter (1895 – 1986)</Title>
+		<Title xml:lang="en">Swedish-language newspapers and magazines of The Finnish National Library (1895 – 1986)</Title>
+		<Description xml:lang="fi">Ruotsinkieliset sanomalehdet ja aikakauslehdet Kansalliskirjaston digitaalisissa kokoelmissa (1895 – 1986), Kielipankki-versio.</Description>
+		<Description xml:lang="sv">Svenskspråkiga tidningar och tidskrifter i Nationalbibliotekets digitala samlingar (1895 – 1986), Kielipankki-version.</Description>
+		<Description xml:lang="en">Swedish-language newspapers and magazines in the National Library's digital collections (1895 – 1986), Kielipankki version.</Description>
+		<LandingPageURI>https://urn.fi/urn:nbn:fi:lb-2016050301</LandingPageURI>
 		<Languages>
 	<Language>swe</Language>
 		</Languages>
@@ -52,14 +68,14 @@
 	</Resource>
 
 	<!-- Suomi24 corpora (TDT) -->	
-	<Resource pid="lb-2024051601">
-		<Title xml:lang="fi">Suomi24 virkkeet -korpus 2001-2023</Title>
-		<Title xml:lang="sv">Suomi24-meningskorpus 2001–2023</Title>
-		<Title xml:lang="en">The Suomi24 Sentences Corpus 2001-2023</Title>
+	<Resource pid="urn:nbn:fi:lb-2024051601">
+		<Title xml:lang="fi">Suomi24 virkkeet -korpus (2001 – 2023)</Title>
+		<Title xml:lang="sv">Suomi24-meningskorpus (2001 – 2023)</Title>
+		<Title xml:lang="en">The Suomi24 Sentences Corpus (2001 – 2023)</Title>
 		<Description xml:lang="fi">Korpus kattaa kaikki Suomi24-verkkoyhteisösivuston keskustelufoorumit ajalta 1.1.2001–31.12.2023.</Description>
 		<Description xml:lang="sv">Korpuset omfattar alla diskussionsforum på den sociala nätverkssajten Suomi24 från den 1 januari 2001 till den 31 december 2023.</Description>
 		<Description xml:lang="en">The corpus covers all the discussion forums of the Suomi24 online social networking website from 1st January 2001 to 31st December 2023.</Description>
-		<LandingPageURI>https://clarino.uib.no/comedi/editor/lb-2024051601</LandingPageURI>
+		<LandingPageURI>https://urn.fi/urn:nbn:fi:lb-2024051601</LandingPageURI>
 		<Languages>
 	<Language>fin</Language>
 		</Languages>
@@ -67,15 +83,63 @@
 		<AvailableLayers ref="word lemma pos"/>
 	</Resource>
 
-	<!-- KLK_FI corpora (TDT) -->	
-	<Resource pid="lb-202009152">
-		<Title xml:lang="fi">Kansalliskirjaston lehtikokoelman suomenkielinen osuus</Title>
-		<Title xml:lang="sv">Nationalbibliotekets finskspråkiga tidningar och tidskrifter</Title>
-		<Title xml:lang="en">Finnish-language newspapers and magazines of The Finnish National Library</Title>
-		<Description xml:lang="fi">Suomenkieliset sanomalehdet ja aikakauslehdet Kansalliskirjaston digitaalisissa kokoelmissa, Kielipankki-versio.</Description>
-		<Description xml:lang="sv">Finskspråkiga tidningar och tidskrifter i Nationalbibliotekets digitala samlingar, Kielipankki-version.</Description>
-		<Description xml:lang="en">Finnish-language newspapers and magazines in the National Library's digital collections, Kielipankki version.</Description>
-		<LandingPageURI>https://clarino.uib.no/comedi/editor/lb-202009152</LandingPageURI>
+	<!-- KLK_FI corpora 1771 – 1919 (TDT) -->	
+	<Resource pid="urn:nbn:fi:lb-202009152_1771-1919">
+		<Title xml:lang="fi">Kansalliskirjaston lehtikokoelman suomenkielinen osuus (1771 – 1919)</Title>
+		<Title xml:lang="sv">Nationalbibliotekets finskspråkiga tidningar och tidskrifter (1771 – 1919)</Title>
+		<Title xml:lang="en">Finnish-language newspapers and magazines of The Finnish National Library (1771 – 1919)</Title>
+		<Description xml:lang="fi">Suomenkieliset sanomalehdet ja aikakauslehdet Kansalliskirjaston digitaalisissa kokoelmissa (1771 – 1919), Kielipankki-versio.</Description>
+		<Description xml:lang="sv">Finskspråkiga tidningar och tidskrifter i Nationalbibliotekets digitala samlingar (1771 – 1919), Kielipankki-version.</Description>
+		<Description xml:lang="en">Finnish-language newspapers and magazines in the National Library's digital collections  (1771 – 1919), Kielipankki version.</Description>
+		<LandingPageURI>https://urn.fi/urn:nbn:fi:lb-202009152</LandingPageURI>
+		<Languages>
+	<Language>fin</Language>
+		</Languages>
+		<AvailableDataViews ref="hits adv"/>
+		<AvailableLayers ref="word lemma pos"/>
+	</Resource>
+
+		<!-- KLK_FI corpora 1920 – 1933 (TDT) -->	
+	<Resource pid="urn:nbn:fi:lb-202009152_1920-1933">
+		<Title xml:lang="fi">Kansalliskirjaston lehtikokoelman suomenkielinen osuus (1920 – 1933)</Title>
+		<Title xml:lang="sv">Nationalbibliotekets finskspråkiga tidningar och tidskrifter (1920 – 1933)</Title>
+		<Title xml:lang="en">Finnish-language newspapers and magazines of The Finnish National Library (1920 – 1933)</Title>
+		<Description xml:lang="fi">Suomenkieliset sanomalehdet ja aikakauslehdet Kansalliskirjaston digitaalisissa kokoelmissa  (1920 – 1933), Kielipankki-versio.</Description>
+		<Description xml:lang="sv">Finskspråkiga tidningar och tidskrifter i Nationalbibliotekets digitala samlingar  (1920 – 1933), Kielipankki-version.</Description>
+		<Description xml:lang="en">Finnish-language newspapers and magazines in the National Library's digital collections (1920 – 1933), Kielipankki version.</Description>
+		<LandingPageURI>https://urn.fi/urn:nbn:fi:lb-202009152</LandingPageURI>
+		<Languages>
+	<Language>fin</Language>
+		</Languages>
+		<AvailableDataViews ref="hits adv"/>
+		<AvailableLayers ref="word lemma pos"/>
+	</Resource>
+
+		<!-- KLK_FI corpora 1934 – 1964 (TDT) -->	
+	<Resource pid="urn:nbn:fi:lb-202009152_1934-1964">
+		<Title xml:lang="fi">Kansalliskirjaston lehtikokoelman suomenkielinen osuus (1934 – 1964)</Title>
+		<Title xml:lang="sv">Nationalbibliotekets finskspråkiga tidningar och tidskrifter (1934 – 1964)</Title>
+		<Title xml:lang="en">Finnish-language newspapers and magazines of The Finnish National Library (1934 – 1964)</Title>
+		<Description xml:lang="fi">Suomenkieliset sanomalehdet ja aikakauslehdet Kansalliskirjaston digitaalisissa kokoelmissa (1934 – 1964), Kielipankki-versio.</Description>
+		<Description xml:lang="sv">Finskspråkiga tidningar och tidskrifter i Nationalbibliotekets digitala samlingar (1934 – 1964), Kielipankki-version.</Description>
+		<Description xml:lang="en">Finnish-language newspapers and magazines in the National Library's digital collections (1934 – 1964), Kielipankki version.</Description>
+		<LandingPageURI>https://urn.fi/urn:nbn:fi:lb-202009152</LandingPageURI>
+		<Languages>
+	<Language>fin</Language>
+		</Languages>
+		<AvailableDataViews ref="hits adv"/>
+		<AvailableLayers ref="word lemma pos"/>
+	</Resource>
+
+		<!-- KLK_FI corpora 1965 – 2021 (TDT) -->	
+	<Resource pid="urn:nbn:fi:lb-202009152_1965-2021">
+		<Title xml:lang="fi">Kansalliskirjaston lehtikokoelman suomenkielinen osuus (1965 – 2021)</Title>
+		<Title xml:lang="sv">Nationalbibliotekets finskspråkiga tidningar och tidskrifter (1965 – 2021)</Title>
+		<Title xml:lang="en">Finnish-language newspapers and magazines of The Finnish National Library (1965 – 2021)</Title>
+		<Description xml:lang="fi">Suomenkieliset sanomalehdet ja aikakauslehdet Kansalliskirjaston digitaalisissa kokoelmissa (1965 – 2021), Kielipankki-versio.</Description>
+		<Description xml:lang="sv">Finskspråkiga tidningar och tidskrifter i Nationalbibliotekets digitala samlingar (1965 – 2021), Kielipankki-version.</Description>
+		<Description xml:lang="en">Finnish-language newspapers and magazines in the National Library's digital collections (1965 – 2021), Kielipankki version.</Description>
+		<LandingPageURI>https://urn.fi/urn:nbn:fi:lb-202009152</LandingPageURI>
 		<Languages>
 	<Language>fin</Language>
 		</Languages>

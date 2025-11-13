@@ -292,7 +292,7 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                 helper.addSpan(wordLayerId, start, end, tokens.get(i).getWord());
                 try {
                     String pos = tokens.get(i).getPos();
-                    if (pos != null && !pos.isEmpty()) {
+                    if (pos != null && !pos.isEmpty()) { // if there's no POS tag, we skip it
                         List<String> translated = posTranslator.fromCorpus(pos);
                         if (!translated.isEmpty()) {
                             helper.addSpan(posLayerId, start, end, translated.get(0));
