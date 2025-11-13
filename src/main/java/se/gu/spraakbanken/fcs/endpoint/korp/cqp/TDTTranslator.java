@@ -42,7 +42,6 @@ public class TDTTranslator implements PosTranslator {
 
     private static Map<String, List<String>> createToUd17() {
         Map<String, List<String>> ud17 = new HashMap<>();
-        //ud17.put("PROPN", Arrays.asList("PROPN")); // remove!!!
         ud17.put("N", Arrays.asList("NOUN", "PROPN"));
         ud17.put("V", Arrays.asList("VERB", "AUX"));
         ud17.put("A", Arrays.asList("ADJ"));
@@ -55,7 +54,7 @@ public class TDTTranslator implements PosTranslator {
         ud17.put("PUNCT", Arrays.asList("PUNCT"));
         ud17.put("SYMB", Arrays.asList("SYM"));
         ud17.put("FOREIGN", Arrays.asList("X"));
-        ud17.put("OTHER_UNK", Arrays.asList("X")); // present in YLENEWS
+        ud17.put("OTHER_UNK", Arrays.asList("X")); // present in YLENEWS, not mentioned in https://www.kielipankki.fi/tuki/korp-tdt/
         return Collections.unmodifiableMap(ud17);
     }
 
