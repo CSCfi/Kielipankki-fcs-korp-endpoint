@@ -56,6 +56,7 @@ public class TDTTranslator implements PosTranslator {
         ud17.put("FOREIGN", Arrays.asList("X"));
         ud17.put("OTHER_UNK", Arrays.asList("X")); // present in YLENEWS, not mentioned in https://www.kielipankki.fi/tuki/korp-tdt/
         ud17.put("PCLE", Arrays.asList("PART")); // present in Suomi24, not mentioned in https://www.kielipankki.fi/tuki/korp-tdt/
+        ud17.put("CS", Arrays.asList("SCONJ")); // present in KLK_FI, not mentioned in https://www.kielipankki.fi/tuki/korp-tdt/
         return Collections.unmodifiableMap(ud17);
     }
 
