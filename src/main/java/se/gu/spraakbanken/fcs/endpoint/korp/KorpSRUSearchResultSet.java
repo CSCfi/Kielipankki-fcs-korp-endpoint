@@ -294,16 +294,11 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                     String pos = tokens.get(i).getPos();
                     if (pos != null && !pos.isEmpty()) { // if there's no POS tag, we skip it
                         List<String> translated = posTranslator.fromCorpus(pos);
-                        if (!translated.isEmpty()) {
-                            helper.addSpan(posLayerId, start, end, translated.get(0));
-                        } else {
-                            System.err.println("POS translator returned no UD tags for '" + pos + "' in left context");
-                            throw new XMLStreamException("POS translator returned no UD tags for '" + pos + "' in left context"); // needs logging to be set up
-                        }
+                        helper.addSpan(posLayerId, start, end, translated.get(0));
                     }
-                } catch (SRUException e) {
-                    System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in "+corpus+" (match)");
-                    throw new XMLStreamException("Failed to translate POS '" + tokens.get(i).getPos() + "' in left context", e);
+                } catch (SRUException ignored) {
+                    System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in " + corpus + " (left cotnext)");
+                    helper.addSpan(posLayerId, start, end, "X"); // if we the corpus POS tag is not in the mapping, tag it as X
                 }
                 helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma());
                 start = end + 1;
@@ -318,16 +313,11 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                 String pos = tokens.get(i).getPos();
                 if (pos != null && !pos.isEmpty()) {
                     List<String> translated = posTranslator.fromCorpus(pos);
-                    if (!translated.isEmpty()) {
-                        helper.addSpan(posLayerId, start, end, translated.get(0), 1);
-                    } else {
-                        System.err.println("POS translator returned no UD tags for '" + pos + "' in the match");
-                        throw new XMLStreamException("POS translator returned no UD tags for '" + pos + "' in the match");
-                    }
+                    helper.addSpan(posLayerId, start, end, translated.get(0), 1);
                 }
-            } catch (SRUException e) {
-                System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in "+corpus+" (match)");
-                throw new XMLStreamException("Failed to translate POS '" + tokens.get(i).getPos() + "' in the match", e);
+            } catch (SRUException ignored) {
+                System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in " + corpus + " (in the match)");
+                helper.addSpan(posLayerId, start, end, "X");
             }
             helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma(), 1);
             start = end + 1;
@@ -342,16 +332,11 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                     String pos = tokens.get(i).getPos();
                     if (pos != null && !pos.isEmpty()) {
                         List<String> translated = posTranslator.fromCorpus(pos);
-                        if (!translated.isEmpty()) {
-                            helper.addSpan(posLayerId, start, end, translated.get(0));
-                        } else {
-                            System.err.println("POS translator returned no UD tags for '" + pos + "' in right context");
-                            throw new XMLStreamException("POS translator returned no UD tags for '" + pos + "' in right context");
-                        }
+                        helper.addSpan(posLayerId, start, end, translated.get(0));
                     }
-                } catch (SRUException e) {
-                    System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in "+corpus+" (match)");
-                    throw new XMLStreamException("Failed to translate POS '" + tokens.get(i).getPos() + "' in right context", e);
+                } catch (SRUException ignored) {
+                    System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in "+ corpus + " (in right context)");
+                    helper.addSpan(posLayerId, start, end, "X");
                 }
                 helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma());
                 start = end + 1;
