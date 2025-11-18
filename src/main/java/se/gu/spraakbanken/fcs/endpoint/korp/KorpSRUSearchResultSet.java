@@ -297,7 +297,7 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                         helper.addSpan(posLayerId, start, end, translated.get(0));
                     }
                 } catch (SRUException ignored) {
-                    System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in " + corpus + " (left cotnext)");
+                    System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in " + corpus + " (in the left context)");
                     helper.addSpan(posLayerId, start, end, "X"); // if we the corpus POS tag is not in the mapping, tag it as X
                 }
                 helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma());
@@ -335,7 +335,7 @@ public class KorpSRUSearchResultSet extends SRUSearchResultSet {
                         helper.addSpan(posLayerId, start, end, translated.get(0));
                     }
                 } catch (SRUException ignored) {
-                    System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in "+ corpus + " (in right context)");
+                    System.err.println("POS translation failed for '"+tokens.get(i).getPos()+"' in "+ corpus + " (in the right context)");
                     helper.addSpan(posLayerId, start, end, "X");
                 }
                 helper.addSpan(lemmaLayerId, start, end, tokens.get(i).getLemma());
