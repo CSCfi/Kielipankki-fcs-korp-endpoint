@@ -192,7 +192,7 @@ public class ServiceInfo {
 	//final String queryString = "";
 
 	// is this v8?
-	final String wsString = "https://www.kielipankki.fi/korp/api8/?";
+	final String wsString = Config.WEB_SERVICE_URL;
 	final String queryString = "command=info";
 
 

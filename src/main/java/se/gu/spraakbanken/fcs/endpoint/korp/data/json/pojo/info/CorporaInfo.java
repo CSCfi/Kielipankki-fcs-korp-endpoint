@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import se.gu.spraakbanken.fcs.endpoint.korp.Config;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -162,7 +163,7 @@ public class CorporaInfo {
 	//final String queryString = "?corpus=";
 	//"ROMI,PAROLE";
 
-	final String wsString ="https://www.kielipankki.fi/korp/api8/";
+	final String wsString = Config.WEB_SERVICE_URL;
 	final String queryString = "corpus_info?corpus=";
 
 	final String corporaValues = getCorpusParameterValues(corpora);
