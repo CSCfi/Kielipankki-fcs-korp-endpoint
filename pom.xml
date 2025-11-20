@@ -6,7 +6,7 @@
 
   <groupId>se.gu.spraakbanken.fcs.endpoint.korp</groupId>
   <artifactId>fcs-korp-endpoint</artifactId>
-  <version>0.1-kp-SNAPSHOT</version>
+  <version>1.0-kp</version>
   <packaging>war</packaging>
   <name>A Korp CLARIN FCS 2.0 endpoint, Kielipankki version</name>
   <description>
