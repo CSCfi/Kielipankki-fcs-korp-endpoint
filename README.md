@@ -1,12 +1,10 @@
 # fcs-korp-endpoint
-The Korp fcs 2.0 reference endpoint implementation.
+A CLARIN-FCS 2.0 endpoint that forwards SRU/FCS queries to Kielipankki's Korp service.  
 
 ## Quick start
 
 Call `mvn clean compile war:war` to create a war file.  
 Use `mvn clean package` to do a full build with tests, war, sources and javadoc.
-
-There are though some configurations to change if you want to use it with your own Korp service.
 
 ## Kielipankki quick start
 
@@ -35,4 +33,72 @@ sudo systemctl start tomcat10
 
 # Test with eg.
 curl -s "http://localhost:8080/fcs-korp/sru?queryType=fcs&query=%5Bword%20%3D%20%27bastun%27%20%26%20lemma%20%3D%20%27bastu%27%20%26%20pos%20%3D%20%27NOUN%27%5D&x-fcs-context=urn:nbn:fi:lb-2016050301_1866-1905"
+
+# (Oprtional) Check logs, last 50 lines
+sudo journalctl -u tomcat10 -n 50
+```
+
+
+## Key features
+- **Bidirectional POS translation.** UD‑17 → corpus tagset is applied when POS is used in multi-layer queries; corpus tagset → UD‑17 happens for every result before it is returned;
+- **Tagset aware lemma matching.** 'contains' for SUC, strict string equality for TDT;
+- **Corpus metadata loader.** reading supported_corpora.json, which is the ultimate source of truth for PIDs, the list of corpora within them, and the tagsets;
+- **Single-PID enforcement from FCS.** `x-fcs-context` must be present and contain one PID;
+- **Separate environment configs.** `config.properties` (production) and `test-config.properties` (tests);
+- **Supported layers.** `word`, `lemma`, and `pos` across all corpora described in the metadata file;
+- **Error logging.**
+
+
+## Extending
+- **Add a corpus/PID:** edit `supported_corpora.json` with the PID, corpus IDs, and tagset; ensure the corpora are available in Korp.
+- **Add a tagset:** implement a new `PosTranslator`, register it in `TranslatorChooser.java`, and reference the tagset in `supported_corpora.json`.
+
+
+## Architecture overview
+```
+SRU/FCS client
+      │  (query + x-fcs-context)
+      ▼
+┌────────────────────────────┐
+│ KorpEndpointSearchEngine   │
+│  • parse request           │
+│  • enforce single PID      │
+│  • select corpora/tagset   │
+└──────────┬─────────────────┘
+           │ uses metadata
+           │
+           │
+           ▼
+┌────────────────────────────┐
+│ CorpusTagsetMapper         │
+│  • supported_corpora.json  │
+└──────────┬─────────────────┘
+           │ tagset
+           ▼
+┌────────────────────────────┐
+│ TranslatorChooser          │
+│  → PosTranslator (SUC/TDT) │
+└──────────┬─────────────────┘
+           │ translator
+           ▼
+┌────────────────────────────┐
+│ FCSToCQPConverter          │
+│  • build CQP               │
+│  • translate UD→corpus POS │
+└──────────┬─────────────────┘
+           │ cqp + corpus IDs
+           ▼
+      Korp REST API (JSON hits)
+           │
+           ▼
+┌────────────────────────────┐
+│ KorpSRUSearchResultSet     │
+│  • iterate KWIC matches    │
+│  • translate POS back to   │
+│    UD-17                   │
+│  • emit CLARIN-FCS XML     │
+└──────────┬─────────────────┘
+           │
+           ▼
+  SRU/FCS response to client
 ```
