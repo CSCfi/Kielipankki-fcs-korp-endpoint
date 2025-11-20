@@ -28,11 +28,11 @@ mvn clean package -Dconfig.file=test-config.properties war:war
 /usr/bin/javax2jakarta target/fcs-korp-endpoint-1.0-kp.war target/fcs-korp-endpoint-1.0-kp-MIGRATED.war
 
 # Copy WAR into Tomcat webapps
-cp ./target/fcs-korp-endpoint-1.0-kp-MIGRATED.war /var/lib/tomcat10/webapps/fcs-korp.war
+sudo cp ./target/fcs-korp-endpoint-1.0-kp-MIGRATED.war /var/lib/tomcat10/webapps/fcs-korp.war
 
 #Start Tomcat
 sudo systemctl start tomcat10
 
 # Test with eg.
-curl "localhost:8080/fcs-korp/sru?queryType=fcs&query=%5Bword+%3D+%27bastu%27%5D"
+curl -s "http://localhost:8080/fcs-korp/sru?queryType=fcs&query=%5Bword%20%3D%20%27bastun%27%20%26%20lemma%20%3D%20%27bastu%27%20%26%20pos%20%3D%20%27NOUN%27%5D&x-fcs-context=urn:nbn:fi:lb-2016050301_1866-1905"
 ```
