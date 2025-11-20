@@ -13,18 +13,8 @@ There are though some configurations to change if you want to use it with your o
 Steps to get a local instance running on an apt-based distribution:
 
 ```bash
-# Dependencies
-sudo apt install maven openjdk-21-jdk
-
-# download tomcat11
-wget https://archive.apache.org/dist/tomcat/tomcat-11/v11.0.9/bin/apache-tomcat-11.0.9.tar.gz
-# and unzip it, removing the tar.gz file
-tar -xvzf apache-tomcat-11.0.9.tar.gz && rm apache-tomcat-11.0.9.tar.gz
-
-# download the official migration tool Tomcat 9 -> 11 (javax -> jakarta) 
-wget https://archive.apache.org/dist/tomcat/jakartaee-migration/v1.0.9/binaries/jakartaee-migration-1.0.9-bin.tar.gz
-# and unzip it, removing the tar.gz file
-tar -xvzf jakartaee-migration-1.0.9-bin.tar.gz && rm jakartaee-migration-1.0.9-bin.tar.gz
+# Install dependencies
+sudo apt install maven openjdk-21-jdk tomcat10 tomcat-jakartaee-migration
 
 # Open the project's directory
 cd Kielipankki-fcs-korp-endpoint
@@ -35,15 +25,13 @@ mvn clean package -D maven.test.skip=true war:war
 mvn clean package -Dconfig.file=test-config.properties war:war
 
 # Migrate the war file from javax to jakarta (necessary for Tomcat11)
-../jakartaee-migration-1.0.9/bin/migrate.sh target/fcs-korp-endpoint-0.1-kp-SNAPSHOT.war target/fcs-korp-endpoint-0.1-kp-SNAPSHOT-MIGRATED.war
+/usr/bin/javax2jakarta target/fcs-korp-endpoint-1.0-kp.war target/fcs-korp-endpoint-1.0-kp-MIGRATED.war
 
 # Copy WAR into Tomcat webapps
-cp ./target/fcs-korp-endpoint-0.1-kp-SNAPSHOT-MIGRATED.war \
-   ../apache-tomcat-11.0.9/webapps/fcs-korp.war
+cp ./target/fcs-korp-endpoint-1.0-kp-MIGRATED.war /var/lib/tomcat10/webapps/fcs-korp.war
 
 #Start Tomcat
-../apache-tomcat-11.0.9/bin/startup.sh
-
+sudo systemctl start tomcat10
 
 # Test with eg.
 curl "localhost:8080/fcs-korp/sru?queryType=fcs&query=%5Bword+%3D+%27bastu%27%5D"

@@ -193,7 +193,7 @@ public class ServiceInfo {
 
 	// is this v8?
 	final String wsString = Config.WEB_SERVICE_URL;
-	final String queryString = "command=info";
+	final String queryString = "?command=info";
 
 
         try {
