@@ -3,8 +3,8 @@ A CLARIN-FCS 2.0 endpoint that forwards SRU/FCS queries to Kielipankki's Korp se
 
 ## Quick start
 
-Call `mvn clean compile war:war` to create a war file.  
-Use `mvn clean package` to do a full build with tests, war, sources and javadoc.
+Call `mvn clean package -D maven.test.skip=true war:war` to create a war file.  
+Use `mvn clean package -Dconfig.file=test-config.properties war:war` to do a full build with tests, war, sources and javadoc.
 
 ## Kielipankki quick start
 
