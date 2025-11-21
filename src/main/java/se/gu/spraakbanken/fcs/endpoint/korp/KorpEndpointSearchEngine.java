@@ -542,7 +542,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
             if (!availableCorpora.containsKey(corpusId)) {
                 throw new SRUException(
                         SRUConstants.SRU_CANNOT_PROCESS_QUERY_REASON_UNKNOWN,
-                        String.format("PID '%s' references corpus '%s', which is not available in Korp.", pid, corpusId));
+                        "PID '" + pid + "' references corpus '" + corpusId + "', which is not available in Korp.");
             }
         }
 
