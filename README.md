@@ -34,7 +34,7 @@ sudo systemctl start tomcat10
 # Test with eg.
 curl -s "http://localhost:8080/fcs-korp/sru?queryType=fcs&query=%5Bword%20%3D%20%27bastun%27%20%26%20lemma%20%3D%20%27bastu%27%20%26%20pos%20%3D%20%27NOUN%27%5D&x-fcs-context=urn:nbn:fi:lb-2016050301_1866-1905"
 
-# (Oprtional) Check logs, last 50 lines
+# (Optional) Check logs, last 50 lines
 sudo journalctl -u tomcat10 -n 50
 ```
 
