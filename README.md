@@ -50,8 +50,8 @@ sudo journalctl -u tomcat10 -n 50
 
 
 ## Extending
-- **Add a corpus/PID:** edit `supported_corpora.json` with the PID, corpus IDs, and tagset; ensure the corpora are available in Korp.
-- **Add a tagset:** implement a new `PosTranslator`, register it in `TranslatorChooser.java`, and reference the tagset in `supported_corpora.json`.
+- **Add a corpus/PID:** edit `supported_corpora.json` with the PID, corpus IDs, and tagset; ensure the corpora are actually available in Korp.
+- **New tagset:** implement a new `PosTranslator`, register it in `TranslatorChooser.java`, and reference the tagset in `supported_corpora.json`.
 
 
 ## Architecture overview
@@ -102,3 +102,5 @@ SRU/FCS client
            ▼
   SRU/FCS response to client
 ```
+
+`endpoint-description.xml` tells FCS which corpora are available for search and describes them (title, langauge, layers)
