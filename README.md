@@ -52,6 +52,7 @@ sudo journalctl -u tomcat10 -n 50
 ## Extending
 - **Add a corpus/PID:** edit `supported_corpora.json` with the PID, corpus IDs, and tagset; ensure the corpora are actually available in Korp.
 - **New tagset:** implement a new `PosTranslator`, register it in `TranslatorChooser.java`, and reference the tagset in `supported_corpora.json`.
+- If in the new tagset lemmas are annotated as a list (like in SUC), adjust `boolean useContains` in `FCSToCQPConverter.java`.
 
 
 ## Architecture overview
