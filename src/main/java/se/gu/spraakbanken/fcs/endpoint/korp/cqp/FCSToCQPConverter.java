@@ -298,7 +298,7 @@ public class FCSToCQPConverter {
 
     private static String getLemmaLayerFilter(Expression expression, String tagset) {
 		boolean contRegexFlag = false;
-    	boolean useContains = !"TDT".equalsIgnoreCase(tagset); // true for SUC, false for TDT
+    	boolean useContains = "SUC".equalsIgnoreCase(tagset); // true for SUC, false for TDT and everything else
 		StringBuffer buf = new StringBuffer();
 		buf.append(expression.getLayerIdentifier());
 		buf.append(" ");
