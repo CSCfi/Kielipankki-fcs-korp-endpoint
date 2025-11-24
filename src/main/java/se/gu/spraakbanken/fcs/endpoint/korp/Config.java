@@ -28,4 +28,5 @@ public final class Config {
     }
 
     public static final String WEB_SERVICE_URL = get("web_service");
+    public static final String KORP_QUERY_STRING = get("korpQueryString");
 }

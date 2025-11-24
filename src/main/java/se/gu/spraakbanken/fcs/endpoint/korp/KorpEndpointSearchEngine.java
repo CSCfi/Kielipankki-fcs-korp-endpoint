@@ -452,7 +452,7 @@ public class KorpEndpointSearchEngine extends SimpleEndpointSearchEngineBase {
     protected Query makeQuery(final String cqpQuery, final List<String> corpora, final int startRecord, final int maximumRecords) {
         ObjectMapper mapper = new ObjectMapper();
         String wsString = Config.WEB_SERVICE_URL;
-        String queryString = "query?defaultcontext=1+sentence&show=msd,lemma,pos&cqp=";
+        String queryString = Config.KORP_QUERY_STRING;
         String startParam = "&start=" + (startRecord == 1 ? 0 : startRecord - 1);
         String endParam = "&end=" + (maximumRecords == 0 ? 250 : startRecord - 1 + maximumRecords - 1);
         String corpusParam = "&corpus=";
